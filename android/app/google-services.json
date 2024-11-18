@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "570869340900",
+    "project_id": "geofficeassistance",
+    "storage_bucket": "geofficeassistance.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:570869340900:android:b60264f92568fa84e72af1",
+        "android_client_info": {
+          "package_name": "com.example.ge_assistant"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "570869340900-fvruga17434jltuieca0vtifq4ojnvrp.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAzz7W-vYa_3JE5Twu8TlT8wqF4VM_HMyM"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "570869340900-fvruga17434jltuieca0vtifq4ojnvrp.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
