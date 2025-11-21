@@ -178,7 +178,7 @@ class _MobileOnboardingState extends State<MobileOnboarding> {
                               ) : Container(),
                               DotsIndicator(
                                 dotsCount: title.length,
-                                position: _currentPageIndex,
+                                position: _currentPageIndex.toDouble(),
                                 decorator: DotsDecorator(
                                     size: Size.square(MediaQuery.of(context).size.height* 0.01),
                                     activeSize:Size(MediaQuery.of(context).size.width* 0.05, MediaQuery.of(context).size.height* 0.01),

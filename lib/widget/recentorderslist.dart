@@ -1,12 +1,11 @@
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/material.dart' hide BoxDecoration, BoxShadow;
-import 'package:flutter_inset_box_shadow/flutter_inset_box_shadow.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:ge_assistant/Constants/appconst.dart';
 import 'package:ge_assistant/Screens/End%20userselection%20page/EmdUserSelectionDesktop.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
-
+import 'package:flutter_inset_shadow/flutter_inset_shadow.dart';
 import '../Constants/alertdylog_order_success.dart';
 import '../models/recentorders.dart';
 
