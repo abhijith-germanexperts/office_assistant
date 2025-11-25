@@ -1,7 +1,7 @@
 #!/bin/sh
 # This is a generated file; do not edit or check into version control.
-export "FLUTTER_ROOT=D:\work\GE\scanner app\ge_qr_scanner\ge_qr_scanner\.fvm\versions\stable"
-export "FLUTTER_APPLICATION_PATH=D:\work\GE\office_assistant\office_assistant"
+export "FLUTTER_ROOT=/Users/ge.macmini/fvm/versions/stable"
+export "FLUTTER_APPLICATION_PATH=/Users/ge.macmini/Documents/Abhijithk/ofcasstnt"
 export "COCOAPODS_PARALLEL_CODE_SIGN=true"
 export "FLUTTER_BUILD_DIR=build"
 export "FLUTTER_BUILD_NAME=1.0.1"

@@ -344,7 +344,7 @@ class _DesktopEndPantryMenuState extends State<DesktopEndPantryMenu>
                               ),
                         ),
                       ),
-                      child: const Text("Recent orders"),
+                      child: const Text("Recent orders1"),
                     ),
                   ),
                   const Spacer(),
@@ -492,7 +492,7 @@ class _DesktopEndPantryMenuState extends State<DesktopEndPantryMenu>
           } else if (ssnapshot.hasData) {
             List<Response> filteredItems =
                 (ssnapshot.data?.data?.response ?? [])
-                    .where((item) => item.categoryname == category)
+                    .where((item) => item.categoryname?.toLowerCase().trim() == category.toLowerCase().trim())
                     .toList();
             List<Response> activeList =
                 filteredItems.where((item) => item.menustatus == 1).toList();
