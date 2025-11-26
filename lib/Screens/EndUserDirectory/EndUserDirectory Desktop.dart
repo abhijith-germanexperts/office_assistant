@@ -45,11 +45,21 @@ class _UserDirectoryDesktopState extends State<UserDirectoryDesktop> {
 
   @override
   void initState() {
-    actualDirectory.addAll(widget.director);
-    directoryFilter = widget.director;
+    if (widget.director.isNotEmpty) {
+      actualDirectory.addAll(widget.director);
+      directoryFilter = widget.director;
+    }
     status = client.getloginusers(AppConstants.token ?? "");
     super.initState();
   }
+
+  // @override
+  // void initState() {
+  //   actualDirectory.addAll(widget.director);
+  //   directoryFilter = widget.director;
+  //   status = client.getloginusers(AppConstants.token ?? "");
+  //   super.initState();
+  // }
 
   void setSearchIndex(String searchLetter) {
     setState(() {
@@ -76,7 +86,10 @@ class _UserDirectoryDesktopState extends State<UserDirectoryDesktop> {
     var headinggroup = AutoSizeGroup();
     double height = MediaQuery.of(context).size.height;
     double width = MediaQuery.of(context).size.width;
-    List<Datum> modeltemp = actualDirectory.first.data ?? [];
+    // List<Datum> modeltemp = actualDirectory.first.data ?? [];
+    List<Datum> modeltemp = actualDirectory.isNotEmpty
+        ? (actualDirectory.first.data ?? [])
+        : [];
     List<Datum> listOfContactbyDepartment = [];
     Set<String> uniqueDepartments = {};
     unFildepartments.insert(0, "All Departments");

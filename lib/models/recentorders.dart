@@ -106,6 +106,7 @@ class Orderdetail {
   final int? menuid;
   final String? categoryname;
   final String? pantryname;
+  final int? categoryid;
 
   Orderdetail({
     this.qty,
@@ -114,6 +115,7 @@ class Orderdetail {
     this.menuid,
     this.categoryname,
     this.pantryname,
+    this.categoryid,
   });
 
   factory Orderdetail.fromJson(Map<String, dynamic> json) => Orderdetail(
@@ -123,6 +125,7 @@ class Orderdetail {
         menuid: json["menuid"],
         categoryname: json["categoryname"],
         pantryname: json["pantryname"],
+    categoryid: json["categoryid"],
       );
 
   Map<String, dynamic> toJson() => {
@@ -132,5 +135,6 @@ class Orderdetail {
         "menuid": menuid,
         "categoryname": categoryname,
         "pantryname": pantryname,
+        "categoryid": categoryid,
       };
 }

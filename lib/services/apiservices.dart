@@ -93,20 +93,41 @@ class ApiProvider {
   Future<OrderCreate> createOrder(
       List<Map<String, dynamic>> orderDetails, String remark) async {
     String postaddFcm = "$baseUrl/createorder";
+
+    final requestBody = jsonEncode({
+      "enduserid": AppConstants.username,
+      "statusorderid": 1,
+      "remark": remark,
+      "status": 1,
+      "Orderdetails": orderDetails
+    });
     http.Response res = await http.post(Uri.parse(postaddFcm),
         headers: {
           "content-type": "application/json",
           "accept": "application/json",
           "apikey": 'a4db08b7-5729-4ba9-8c08-f2df493465a1'
         },
-        body: jsonEncode({
-          "enduserid": AppConstants.username,
-          "statusorderid": 1,
-          "remark": remark,
-          "status": 1,
-          "Orderdetails": orderDetails
-        }));
+        body: requestBody);
     var data = orderCreateFromJson(res.body.toString());
+    consolePrint(
+        "createOrder - ${res.request?.url} | Request Body: $requestBody | Response Body: ${res.body} | Headers: ${res.request?.headers}");
+
+    // http.Response res = await http.post(Uri.parse(postaddFcm),
+    //     headers: {
+    //       "content-type": "application/json",
+    //       "accept": "application/json",
+    //       "apikey": 'a4db08b7-5729-4ba9-8c08-f2df493465a1'
+    //     },
+    //     body: jsonEncode({
+    //       "enduserid": AppConstants.username,
+    //       "statusorderid": 1,
+    //       "remark": remark,
+    //       "status": 1,
+    //       "Orderdetails": orderDetails
+    //     }));
+    // var data = orderCreateFromJson(res.body.toString());
+    // consolePrint(
+    //     "createOrder - ${res?.request?.url} | Body: ${res.body} | header - ${res.request?.headers.toString()} | ${res?.request?.} ");
     if (res.statusCode == 200) {
       return data.first;
       //showOrderSuccessDialog();

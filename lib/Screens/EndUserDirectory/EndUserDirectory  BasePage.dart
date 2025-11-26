@@ -15,26 +15,65 @@ class UserDirectoryBasePage extends StatelessWidget {
     ApiProvider client = ApiProvider();
 
     return Scaffold(
-        body: FutureBuilder<List<DirectoryModel>?>(
-            future: client.getDirectoryPage(),
-            builder: (context, ssnapshot) {
-              if (ssnapshot.hasData) {
-                print(ssnapshot.data?.length);
-                return UserDirectoryResponsiveLayout(
-                    UserDirectorymobileBody: UserDirectoryDesktop(
-                      director: ssnapshot.data ?? [],
-                    ),
-                    UserDirectorydesktopBody: UserDirectoryDesktop(
-                      director: ssnapshot.data ?? [],
-                    ));
-              } else if (ssnapshot.hasError) {
-                return const Center(
-                  child: Text('Error'),
-                );
-              } else {
-                const SizedBox.shrink();
-              }
-              return const SizedBox.shrink();
-            }));
+      body: FutureBuilder<List<DirectoryModel>?>(
+        future: client.getDirectoryPage(),
+        builder: (context, ssnapshot) {
+          if (ssnapshot.connectionState == ConnectionState.waiting) {
+            return const Center(
+              child: CircularProgressIndicator(),
+            );
+          }
+
+          if (ssnapshot.hasError) {
+            return const Center(
+              child: Text('Error loading directory'),
+            );
+          }
+
+          if (ssnapshot.hasData && ssnapshot.data != null) {
+            print(ssnapshot.data!.length);
+            return UserDirectoryResponsiveLayout(
+              UserDirectorymobileBody: UserDirectoryDesktop(
+                director: ssnapshot.data!,
+              ),
+              UserDirectorydesktopBody: UserDirectoryDesktop(
+                director: ssnapshot.data!,
+              ),
+            );
+          }
+
+          return const Center(
+            child: Text('No data available'),
+          );
+        },
+      ),
+    );
   }
+
+// Widget build(BuildContext context) {
+  //   ApiProvider client = ApiProvider();
+  //
+  //   return Scaffold(
+  //       body: FutureBuilder<List<DirectoryModel>?>(
+  //           future: client.getDirectoryPage(),
+  //           builder: (context, ssnapshot) {
+  //             if (ssnapshot.hasData) {
+  //               print(ssnapshot.data?.length);
+  //               return UserDirectoryResponsiveLayout(
+  //                   UserDirectorymobileBody: UserDirectoryDesktop(
+  //                     director: ssnapshot.data ?? [],
+  //                   ),
+  //                   UserDirectorydesktopBody: UserDirectoryDesktop(
+  //                     director: ssnapshot.data ?? [],
+  //                   ));
+  //             } else if (ssnapshot.hasError) {
+  //               return const Center(
+  //                 child: Text('Error'),
+  //               );
+  //             } else {
+  //               const SizedBox.shrink();
+  //             }
+  //             return const SizedBox.shrink();
+  //           }));
+  // }
 }

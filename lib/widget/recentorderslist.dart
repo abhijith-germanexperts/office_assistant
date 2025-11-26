@@ -3,6 +3,9 @@ import 'package:flutter/material.dart' hide BoxDecoration, BoxShadow;
 import 'package:flutter_svg/svg.dart';
 import 'package:ge_assistant/Constants/appconst.dart';
 import 'package:ge_assistant/Screens/End%20userselection%20page/EmdUserSelectionDesktop.dart';
+import 'package:ge_assistant/models/check_order_lmit/checkuserorderlimitmodel.dart';
+import 'package:ge_assistant/services/apiservices.dart';
+import 'package:ge_assistant/utils/common_class/console_print.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
 import 'package:flutter_inset_shadow/flutter_inset_shadow.dart';
@@ -34,11 +37,103 @@ Widget customRecentOrderListExpanded(
   int status = orderitem.statusorderid! - 1;
   print(formatdate);
   print(formattedTime);
+
+  bool isCheckingLimit = false;
+
+  Future<bool?> checkOrderLimit(StateSetter setState,
+      {int? foodcategoryid, required int? qty}) async {
+    if (isCheckingLimit) return null;
+    final categoryId = foodcategoryid;
+    if (categoryId == null) {
+      ScaffoldMessenger.of(context).clearSnackBars();
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Missing category ID.')),
+      );
+      return null;
+    }
+
+    try {
+      setState(() => isCheckingLimit = true);
+
+      final client = ApiProvider();
+      // The API client returns a single nullable object, not a list.
+      final CheckUserOrderLimit? model =
+          await client.checkUserOrderLimit(categoryId);
+
+      if (model == null) {
+        ScaffoldMessenger.of(context).clearSnackBars();
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Unable to verify order limit.')),
+        );
+        return null;
+      }
+
+      final data = model.data;
+
+      if (data == null) {
+        ScaffoldMessenger.of(context).clearSnackBars();
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Invalid limit data received.')),
+        );
+        return true;
+      }
+
+      // Condition 1: Unlimited category
+      if (data.hasUserLimit == false || data.categoryType == 'unlimited') {
+        return true;
+      }
+      // Condition 2: Limited category
+      else if (data.hasUserLimit == true && data.categoryType == 'limited') {
+        // final cartProvider = Provider.of<CartProvider>(context, listen: false);
+        int quantityInCart = qty ?? 0;
+        // for (var cartItem in cartProvider.cartItems) {
+        //   if (cartItem.item.foodcategoryid == categoryId) {
+        //     quantityInCart += cartItem.quantity;
+        //   }
+        // }
+
+        if (quantityInCart < (data.balance ?? 0)) {
+          // provider.addToCart(menuitem);
+          // ScaffoldMessenger.of(context).clearSnackBars();
+          // ScaffoldMessenger.of(context).showSnackBar(
+          //   const SnackBar(content: Text('Added to cart.')),
+          // );
+          return true;
+        } else {
+          // ScaffoldMessenger.of(context).clearSnackBars();
+          // ScaffoldMessenger.of(context).showSnackBar(
+          //   const SnackBar(
+          //     content:
+          //         Text('You have reached your order limit for this category.'),
+          //   ),
+          // );
+          return false;
+        }
+      } else {
+        ScaffoldMessenger.of(context).clearSnackBars();
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+              content: Text('Could not determine order eligibility.')),
+        );
+        return false;
+      }
+    } catch (e) {
+      ScaffoldMessenger.of(context).clearSnackBars();
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Error: ${e.toString()}')),
+      );
+      return false;
+    } finally {
+      setState(() => isCheckingLimit = false);
+    }
+  }
+
   return StatefulBuilder(
       builder: (BuildContext context, void Function(void Function()) setState) {
     return Container(
       // width: width * .7,
-      margin: const EdgeInsets.all(1), // Optional margin for the inner shadow
+      margin: const EdgeInsets.all(1),
+      // Optional margin for the inner shadow
       decoration: isexpanded
           ? const BoxDecoration(
               boxShadow: [
@@ -126,25 +221,44 @@ Widget customRecentOrderListExpanded(
                     ElevatedButton(
                       onPressed: status != 2
                           ? null
-                          : () {
+                          : () async {
+                              bool? hasLimitIssue = false;
                               for (int i = 0;
                                   i < orderitem.orderdetails!.length;
                                   i++) {
+                                consolePrint(
+                                    "INFO - ${orderitem?.orderdetails?.first?.categoryname}");
                                 orderDetails.add({
                                   "qty": orderitem.orderdetails?[i].qty,
                                   "menuid": orderitem.orderdetails?[i].menuid,
                                   "pantryid": AppConstants.pantryId ?? ""
                                 });
-                              }
-                              showOrderSuccessDialog(context, orderDetails, "");
-                              // status == 2
-                              //     ? showOrderSuccessDialog(
-                              //         context, orderDetails, "remark")
-                              //     : alert(context, "ALERT....!",
-                              //         "You have already placed this order before.");
 
-                              // Navigator.pushReplacement(
-                              //     context, MaterialPageRoute(builder: (context) => const EndViewOrderBasePage()));
+                                bool? needdToAdd = await checkOrderLimit(
+                                    setState,
+                                    foodcategoryid:
+                                        orderitem.orderdetails?[i].categoryid,
+                                    qty: orderitem.orderdetails?[i].qty);
+                                consolePrint("needdToAdd - $needdToAdd");
+                                if (needdToAdd != true) {
+                                  hasLimitIssue = true;
+                                }
+                              }
+                              consolePrint(
+                                  "has limit issue*** - $hasLimitIssue");
+                              if (hasLimitIssue == false) {
+                                showOrderSuccessDialog(context, orderDetails,
+                                    ""); //TODO:commented for testing 26 Nov 25 26 11 25
+                              } else {
+                                ScaffoldMessenger.of(context).clearSnackBars();
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  const SnackBar(
+                                    content: Text(
+                                      'You have reached your order limit for this category.',
+                                    ),
+                                  ),
+                                );
+                              }
                             },
                       style: ButtonStyle(
                           backgroundColor: MaterialStatePropertyAll(status == 2
@@ -379,164 +493,6 @@ Widget customRecentOrderListExpanded(
                               ],
                             ),
                           ),
-                          // SizedBox(
-                          //   // color: Colors.red,
-                          //   height: 200,
-                          //   child: Column(
-                          //     children: [
-                          //       Row(
-                          //         mainAxisAlignment:
-                          //             MainAxisAlignment.spaceBetween,
-                          //         children: [
-                          //           SizedBox(
-                          //             width: width * .25,
-                          //             child: const Row(
-                          //               mainAxisAlignment:
-                          //                   MainAxisAlignment.start,
-                          //               children: [
-                          //                 SizedBox(
-                          //                   width: 20,
-                          //                 ),
-                          //                 Text(
-                          //                   "Item name",
-                          //                   textAlign: TextAlign.left,
-                          //                   style:
-                          //                       TextStyle(color: Colors.white),
-                          //                 ),
-                          //               ],
-                          //             ),
-                          //           ),
-                          //           SizedBox(
-                          //             width: width * .1,
-                          //             child: const AutoSizeText(
-                          //               "Category",
-                          //               textAlign: TextAlign.center,
-                          //               style: TextStyle(color: Colors.white),
-                          //               maxLines: 1,
-                          //             ),
-                          //           ),
-                          //           SizedBox(
-                          //             width: width * .1,
-                          //             child: const AutoSizeText(
-                          //               "Quantity",
-                          //               textAlign: TextAlign.center,
-                          //               style: TextStyle(color: Colors.white),
-                          //               maxLines: 1,
-                          //             ),
-                          //           ),
-                          //         ],
-                          //       ),
-                          //       Container(
-                          //         color: Colors.white,
-                          //         width: double.maxFinite,
-                          //         height: 1,
-                          //       ),
-                          //       Expanded(
-                          //         child: ListView.builder(
-                          //             itemCount: orderitem.orderdetails?.length,
-                          //             itemBuilder: (_, index) {
-                          //               return SizedBox(
-                          //                 height: height * .1,
-                          //                 // color: Colors.brown,
-                          //                 child: Row(
-                          //                   mainAxisAlignment:
-                          //                       MainAxisAlignment.spaceBetween,
-                          //                   children: [
-                          //                     SizedBox(
-                          //                       width: width * .25,
-                          //                       // color:Colors.red,
-                          //                       child: Row(
-                          //                         children: [
-                          //                           SizedBox(
-                          //                             child: FadeInImage
-                          //                                 .assetNetwork(
-                          //                               placeholder:
-                          //                                   'image/ge office assistant.gif',
-                          //                               imageErrorBuilder:
-                          //                                   (context, error,
-                          //                                       stackTrace) {
-                          //                                 return Image.asset(
-                          //                                     'image/ge office assistant.gif',
-                          //                                     width: width * .1,
-                          //                                     fit: BoxFit
-                          //                                         .fitWidth);
-                          //                               },
-                          //                               image: (orderitem
-                          //                                       .orderdetails?[
-                          //                                           index]
-                          //                                       .itemimgpath
-                          //                                       .toString() ??
-                          //                                   ""),
-                          //                               fit: BoxFit.fill,
-                          //                             ),
-                          //                           ),
-                          //                           Align(
-                          //                             alignment:
-                          //                                 Alignment.center,
-                          //                             child: Padding(
-                          //                               padding:
-                          //                                   const EdgeInsets
-                          //                                       .only(top: 8.0),
-                          //                               child: AutoSizeText(
-                          //                                 orderitem
-                          //                                         .orderdetails?[
-                          //                                             index]
-                          //                                         .itemname ??
-                          //                                     "",
-                          //                                 style:
-                          //                                     const TextStyle(
-                          //                                         color: Colors
-                          //                                             .white),
-                          //                               ),
-                          //                             ),
-                          //                           ),
-                          //                         ],
-                          //                       ),
-                          //                     ),
-                          //                     SizedBox(
-                          //                         // color: Colors.blue,
-                          //                         width: width * .1,
-                          //                         child: Padding(
-                          //                           padding:
-                          //                               const EdgeInsets.only(
-                          //                                   left: 8.0,
-                          //                                   right: 8),
-                          //                           child: AutoSizeText(
-                          //                             orderitem
-                          //                                     .orderdetails?[
-                          //                                         index]
-                          //                                     .categoryname ??
-                          //                                 "",
-                          //                             textAlign:
-                          //                                 TextAlign.center,
-                          //                             style: const TextStyle(
-                          //                               color: Colors.white,
-                          //                             ),
-                          //                             maxLines: 1,
-                          //                           ),
-                          //                         )),
-                          //                     SizedBox(
-                          //                         width: width * .1,
-                          //                         // color: Colors.green,
-                          //                         child: AutoSizeText(
-                          //                           orderitem
-                          //                                   .orderdetails?[
-                          //                                       index]
-                          //                                   .qty
-                          //                                   .toString() ??
-                          //                               "",
-                          //                           style: const TextStyle(
-                          //                               color: Colors.white),
-                          //                           textAlign: TextAlign.center,
-                          //                         )),
-                          //                   ],
-                          //                 ),
-                          //               );
-                          //             }),
-                          //       )
-                          //     ],
-                          //   ),
-                          // )
                         ],
                       ),
                     ),
@@ -554,7 +510,9 @@ Widget customRecentOrderListExpanded(
                               child: ElevatedButton(
                                 onPressed: status != 2
                                     ? null
-                                    : () {
+                                    : () async {
+                                        bool? hasLimitIssue = false;
+
                                         // Navigator.pushReplacement(
                                         //     context, MaterialPageRoute(builder: (context) => const EndViewOrderBasePage()));
                                         print(status);
@@ -569,9 +527,39 @@ Widget customRecentOrderListExpanded(
                                             "pantryid":
                                                 AppConstants.pantryId.toString()
                                           });
+                                          bool? needdToAdd =
+                                              await checkOrderLimit(setState,
+                                                  foodcategoryid: orderitem
+                                                      .orderdetails?[i]
+                                                      .categoryid,
+                                                  qty: orderitem
+                                                      .orderdetails?[i].qty);
+                                          consolePrint(
+                                              "needdToAdd - $needdToAdd");
+                                          if (needdToAdd != true) {
+                                            hasLimitIssue = true;
+                                          }
                                         }
-                                        showOrderSuccessDialog(
-                                            context, orderDetails, "");
+                                        // showOrderSuccessDialog(
+                                        //     context, orderDetails, "");
+
+                                        consolePrint(
+                                            "has limit issue*** - $hasLimitIssue");
+                                        if (hasLimitIssue == false) {
+                                          showOrderSuccessDialog(
+                                              context, orderDetails, "");
+                                        } else {
+                                          ScaffoldMessenger.of(context)
+                                              .clearSnackBars();
+                                          ScaffoldMessenger.of(context)
+                                              .showSnackBar(
+                                            const SnackBar(
+                                              content: Text(
+                                                'You have reached your order limit for this category.',
+                                              ),
+                                            ),
+                                          );
+                                        }
                                       },
                                 style: ButtonStyle(
                                     backgroundColor: MaterialStatePropertyAll(
@@ -602,296 +590,3 @@ Widget customRecentOrderListExpanded(
     );
   });
 }
-
-
-
-
-
-
-// StatefulBuilder(
-//       builder: (BuildContext context, void Function(void Function()) setState) {
-//     return Container(
-//       // width: width * .7,
-//       margin: const EdgeInsets.all(1), // Optional margin for the inner shadow
-//       decoration: isexpanded
-//           ? const BoxDecoration(
-//               boxShadow: [
-//                 BoxShadow(
-//                     color: Colors.black,
-//                     offset: Offset(1, 1),
-//                     blurRadius: 4,
-//                     spreadRadius: 0,
-//                     inset: true),
-//                 BoxShadow(
-//                     color: Colors.grey,
-//                     offset: Offset(-1, -1),
-//                     blurRadius: 4,
-//                     spreadRadius: 0,
-//                     inset: true),
-//               ], //
-//               //
-//               //color: Color(0xff5A5858),// Container background color
-//             )
-//           : const BoxDecoration(),
-//       child: Theme(
-//         data: ThemeData().copyWith(dividerColor: Colors.transparent),
-//         child: ExpansionTile(
-//           // tilePadding: EdgeInsets.zero,
-//           shape: Border.all(color: Colors.transparent),
-//           // collapsedBackgroundColor: Colors.transparent,
-//           trailing: isexpanded
-//               ? SizedBox(
-//                   child: SvgPicture.asset(
-//                       'image/iconmonstr-angel-up-circle-thin.svg'))
-//               : SizedBox(
-//                   child: SvgPicture.asset(
-//                       'image/iconmonstr-angel-down-circle-thin.svg')),
-//           // trailing: Icon(
-//           //   isexpanded ? Icons.keyboard_arrow_up : Icons.keyboard_arrow_down,
-//           //   color: Colors.white, // Specify the icon for the collapsed state
-//           // ),
-//           title: !isexpanded
-//               ? Row(
-//                   children: [
-//                     SizedBox(
-//                         child: Text(
-//                       formatdate,
-//                       textAlign: TextAlign.center,
-//                       style: GoogleFonts.inriaSerif(
-//                           fontSize: 20, color: Colors.white),
-//                       maxLines: 1,
-//                       // group: listgroup,
-//                     )),
-//                     SizedBox(
-//                         child: Padding(
-//                       padding: EdgeInsets.only(
-//                           left: MediaQuery.of(context).size.width * 0.03,
-//                           right: 8),
-//                       child: Text(
-//                         formattedTime,
-//                         textAlign: TextAlign.center,
-//                         style: GoogleFonts.inriaSerif(
-//                             fontSize: 20, color: Colors.white),
-//                         maxLines: 1,
-//                         // group: listgroup,
-//                       ),
-//                     )),
-//                     Padding(
-//                       padding: EdgeInsets.only(
-//                           left: MediaQuery.of(context).size.width * 0.03,
-//                           right: 8),
-//                       child: SizedBox(
-//                           height: 16,
-//                           child: Image(image: AssetImage(image[status]))),
-//                     ),
-//                     const Spacer(
-//                       flex: 6,
-//                     ),
-//                     ElevatedButton(
-//                       onPressed: () {
-//                         for (int i = 0;
-//                             i < orderitem.orderdetails!.length;
-//                             i++) {
-//                           orderDetails.add({
-//                             "qty": orderitem.orderdetails?[i].qty,
-//                             "menuid": orderitem.orderdetails?[i].menuid,
-//                             "pantryid": "2"
-//                           });
-//                         }
-//                         showOrderSuccessDialog(context, orderDetails, "remark");
-//                        // Navigator.pop(context);
-//                         //  Navigator.pushReplacement(
-//                         //     context,
-//                         //     MaterialPageRoute(
-//                         //         builder: (context) =>
-//                         //             const EndViewOrderBasePage()));
-//                       },
-//                       style: const ButtonStyle(
-//                           backgroundColor:
-//                               MaterialStatePropertyAll(Colors.white)),
-//                       child: const Text(
-//                         "Repeat Order",
-//                         style: TextStyle(color: Colors.black),
-//                       ),
-//                     ),
-//                   ],
-//                 )
-//               : Container(
-//                   child: Row(
-//                     children: [
-//                       Expanded(
-//                         flex: 4,
-//                         child: Column(
-//                           children: [
-//                             Row(
-//                               children: [
-//                                 SizedBox(
-//                                     child: Text(
-//                                   orderitem.createdAt.toString(),
-//                                   textAlign: TextAlign.center,
-//                                   style: GoogleFonts.inriaSerif(
-//                                       fontSize: 20, color: Colors.white),
-//                                   maxLines: 1,
-//                                   // group: listgroup,
-//                                 )),
-//                                 SizedBox(
-//                                     child: Padding(
-//                                   padding: EdgeInsets.only(
-//                                       left: MediaQuery.of(context).size.width *
-//                                           0.03,
-//                                       right: 8),
-//                                   child: Text(
-//                                     orderitem.createdAt.toString(),
-//                                     textAlign: TextAlign.center,
-//                                     style: GoogleFonts.inriaSerif(
-//                                         fontSize: 20, color: Colors.white),
-//                                     maxLines: 1,
-//                                     // group: listgroup,
-//                                   ),
-//                                 )),
-//                                 Padding(
-//                                   padding: EdgeInsets.only(
-//                                       left: MediaQuery.of(context).size.width *
-//                                           0.03,
-//                                       right: 8),
-//                                   child: SizedBox(
-//                                       height: 16,
-//                                       child: Image(
-//                                           image: AssetImage(image[
-//                                               orderitem.statusorderid ?? 0]))),
-//                                 ),
-//                                 // const Spacer(
-//                                 //   flex: 6,
-//                                 // ),
-//                               ],
-//                             ),
-//                             // ============List of items start here==============================
-//                             SizedBox(
-//                               height: 200,
-//                               child: Column(
-//                                 children: [
-//                                   const Padding(
-//                                     padding: EdgeInsets.only(left: 18.0),
-//                                     child: Row(
-//                                       children: [
-//                                         Expanded(
-//                                             child: Text(
-//                                           "Item name",
-//                                           textAlign: TextAlign.center,
-//                                           style: TextStyle(color: Colors.white),
-//                                         )),
-//                                         Expanded(
-//                                             child: Text(
-//                                           "Category",
-//                                           textAlign: TextAlign.center,
-//                                           style: TextStyle(color: Colors.white),
-//                                         )),
-//                                         Expanded(
-//                                             child: Text(
-//                                           "Quantity",
-//                                           textAlign: TextAlign.start,
-//                                           style: TextStyle(color: Colors.white),
-//                                         )),
-//                                       ],
-//                                     ),
-//                                   ),
-//                                   Container(
-//                                     color: Colors.white,
-//                                     width: double.maxFinite,
-//                                     height: 1,
-//                                   ),
-//                                   Expanded(
-//                                     child: ListView.builder(
-//                                         itemCount:
-//                                             orderitem.orderdetails?.length,
-//                                         itemBuilder: (_, index) {
-//                                           return SizedBox(
-//                                             height: 40,
-//                                             child: Row(
-//                                               children: [
-//                                                 const Expanded(
-//                                                     child: Row(
-//                                                   children: [
-//                                                     Image(
-//                                                         image: AssetImage(
-//                                                             "image/20002124-d-classic_collection_espresso-cup-expressod.png")),
-//                                                   ],
-//                                                 )),
-//                                                 Expanded(
-//                                                     child: Text(
-//                                                   orderitem.orderdetails?[index]
-//                                                           .itemname ??
-//                                                       "",
-//                                                   style: const TextStyle(
-//                                                       color: Colors.white),
-//                                                 )),
-//                                                 Expanded(
-//                                                     child: Text(
-//                                                   orderitem.orderdetails?[index]
-//                                                           .categoryname ??
-//                                                       "",
-//                                                   style: const TextStyle(
-//                                                       color: Colors.white),
-//                                                 )),
-//                                                 Expanded(
-//                                                     child: Text(
-//                                                   orderitem.orderdetails?[index]
-//                                                           .qty
-//                                                           .toString() ??
-//                                                       "",
-//                                                   style: TextStyle(
-//                                                       color: Colors.white),
-//                                                 )),
-//                                               ],
-//                                             ),
-//                                           );
-//                                         }),
-//                                   )
-//                                 ],
-//                               ),
-//                             )
-//                           ],
-//                         ),
-//                       ),
-//                       // =====Fist part of row end here =============================
-//                       Expanded(
-//                         child: SizedBox(
-//                           height: 200,
-//                           width: 850,
-//                           child: Column(
-//                             mainAxisAlignment: MainAxisAlignment.end,
-//                             crossAxisAlignment: CrossAxisAlignment.end,
-//                             children: [
-//                               SizedBox(
-//                                 child: ElevatedButton(
-//                                   onPressed: () {
-//                                     // Navigator.pushReplacement(
-//                                     //     context, MaterialPageRoute(builder: (context) => const EndViewOrderBasePage()));
-//                                   },
-//                                   child: const AutoSizeText(
-//                                     "Repeat Order",
-//                                     textAlign: TextAlign.center,
-//                                     maxLines: 2,
-//                                     style: TextStyle(color: Colors.black),
-//                                   ),
-//                                   style: const ButtonStyle(
-//                                       backgroundColor: MaterialStatePropertyAll(
-//                                           Colors.white)),
-//                                 ),
-//                               ),
-//                             ],
-//                           ),
-//                         ),
-//                       ),
-//                     ],
-//                   ),
-//                 ),
-
-//           onExpansionChanged: (value) {
-//             isexpanded = value;
-//             setState(() {});
-//           },
-//         ),
-//       ),
-//     );
-//   });
