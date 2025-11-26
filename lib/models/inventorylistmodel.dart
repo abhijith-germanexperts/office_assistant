@@ -66,6 +66,7 @@ class Data {
 }
 
 class Response {
+  final int? foodcategoryid;
   final int? menupantryid;
   final int? pantryid;
   final int? menuid;
@@ -81,6 +82,7 @@ class Response {
   final dynamic updatedbyname;
 
   Response({
+    this.foodcategoryid,
     this.menupantryid,
     this.pantryid,
     this.menuid,
@@ -97,6 +99,7 @@ class Response {
   });
 
   factory Response.fromJson(Map<String, dynamic> json) => Response(
+    foodcategoryid: json["foodcategoryid"],
         menupantryid: json["menupantryid"],
         pantryid: json["pantryid"],
         menuid: json["menuid"],
@@ -113,6 +116,7 @@ class Response {
       );
 
   Map<String, dynamic> toJson() => {
+        "foodcategoryid": foodcategoryid,
         "menupantryid": menupantryid,
         "pantryid": pantryid,
         "menuid": menuid,

@@ -7,6 +7,8 @@ import 'package:ge_assistant/models/canceledandcompletedOrdermodel.dart';
 import 'package:ge_assistant/models/getpantryid.dart';
 import 'package:ge_assistant/models/recentorders.dart';
 import 'package:ge_assistant/utils/common_class/console_print.dart';
+import 'package:ge_assistant/utils/common_class/sp_keys.dart';
+import 'package:ge_assistant/utils/common_class/sp_utils.dart';
 import 'package:http/http.dart' as http;
 
 import '../Constants/alertdylog_order_success.dart';
@@ -22,14 +24,15 @@ import '../models/pantryusernotification.dart';
 import '../models/pendingorderforpantrymodel.dart';
 import '../models/updateNotification.dart';
 import '../models/vieworderbystatusmodel.dart';
+import '../models/check_order_lmit/checkuserorderlimitmodel.dart';
 
 class ApiProvider {
   // String? baseUrl = "http://geapps.germanexperts.ae:7004/api/";
-String baseUrl = "https://geapps.germanexperts.ae:7013/api";
+  String baseUrl = "https://geapps.germanexperts.ae:7013/api";
+
   Future<Login> getUserDetails(String username, String password) async {
     final response = await http.get(
-        Uri.parse(
-            '$baseUrl/pantrylogin/$username/$password'),
+        Uri.parse('$baseUrl/pantrylogin/$username/$password'),
         headers: {"apikey": "a4db08b7-5729-4ba9-8c08-f2df493465a1"});
     var data = loginFromJson(response.body.toString());
     if (response.statusCode == 200) {
@@ -40,9 +43,7 @@ String baseUrl = "https://geapps.germanexperts.ae:7013/api";
   }
 
   Future<List<DirectoryModel>?> getDirectoryPage() async {
-    final response = await http.get(
-        Uri.parse(
-            '$baseUrl/geassistantdirectory'),
+    final response = await http.get(Uri.parse('$baseUrl/geassistantdirectory'),
         headers: {"apikey": "a4db08b7-5729-4ba9-8c08-f2df493465a1"});
     List<DirectoryModel>? data =
         directoryModelFromJson(response.body.toString());
@@ -79,8 +80,7 @@ String baseUrl = "https://geapps.germanexperts.ae:7013/api";
   }
 
   Future<Endusermenu> getorderList() async {
-    final response = await http.get(
-        Uri.parse('$baseUrl/geassistantmenu'),
+    final response = await http.get(Uri.parse('$baseUrl/geassistantmenu'),
         headers: {"apikey": "a4db08b7-5729-4ba9-8c08-f2df493465a1"});
     var data = endusermenuFromJson(response.body.toString());
     if (response.statusCode == 200) {
@@ -116,9 +116,30 @@ String baseUrl = "https://geapps.germanexperts.ae:7013/api";
     }
   }
 
+  //this to check order limit
+  Future<CheckUserOrderLimit?> checkUserOrderLimit(int? foodcategoryid) async {
+    String checkLimitUrl = "$baseUrl/checkuserorderlimit";
+
+    String? userID = await SpUtils.getSpStringValue(key: SpKeys.userIdSp);
+    http.Response res = await http.post(Uri.parse(checkLimitUrl),
+        headers: {
+          "content-type": "application/json",
+          "accept": "application/json",
+          "apikey": 'a4db08b7-5729-4ba9-8c08-f2df493465a1'
+        },
+        body: jsonEncode(
+            {"enduserid": userID, "foodcategoryid": foodcategoryid}));
+
+    var data = checkUserOrderLimitFromJson(res.body.toString());
+    if (res.statusCode == 200) {
+      return data.first;
+    } else {
+      return data.first;
+    }
+  }
+
   Future<OrderCreate> createAssistance() async {
-    String postaddFcm =
-        "$baseUrl/insertneedassistance";
+    String postaddFcm = "$baseUrl/insertneedassistance";
     http.Response res = await http.post(Uri.parse(postaddFcm),
         headers: {
           "content-type": "application/json",
@@ -139,8 +160,7 @@ String baseUrl = "https://geapps.germanexperts.ae:7013/api";
   }
 
   Future<Inventoryresponse> getmenuInventoryList() async {
-    final response = await http.post(
-        Uri.parse('$baseUrl/listallinventory'),
+    final response = await http.post(Uri.parse('$baseUrl/listallinventory'),
         headers: {"apikey": "a4db08b7-5729-4ba9-8c08-f2df493465a1"},
         body: {"pantryid": AppConstants.pantryId.toString()});
 
@@ -154,8 +174,7 @@ String baseUrl = "https://geapps.germanexperts.ae:7013/api";
   }
 
   Future<Inventoryresponse> getInventoryList() async {
-    final response = await http.post(
-        Uri.parse('$baseUrl/listallinventory'),
+    final response = await http.post(Uri.parse('$baseUrl/listallinventory'),
         headers: {"apikey": "a4db08b7-5729-4ba9-8c08-f2df493465a1"},
         body: {"pantryid": AppConstants.userPantryId.toString()});
     var data = inventoryresponseFromJson(response.body.toString());
@@ -168,9 +187,7 @@ String baseUrl = "https://geapps.germanexperts.ae:7013/api";
 
   Future<Inventorystatusupdateresponse> changeInventoryItemstatus(
       id, status) async {
-    final response = await http.post(
-        Uri.parse(
-            '$baseUrl/updateinventory/$id'),
+    final response = await http.post(Uri.parse('$baseUrl/updateinventory/$id'),
         headers: {"apikey": "a4db08b7-5729-4ba9-8c08-f2df493465a1"},
         body: {"menustatus": status});
     var data = inventorystatusupdateresponseFromJson(response.body.toString());
@@ -183,8 +200,7 @@ String baseUrl = "https://geapps.germanexperts.ae:7013/api";
 
   Future<Pendingorderforpantryuser> acceptedOrderByPantry() async {
     final response = await http.post(
-        Uri.parse(
-            '$baseUrl/ordersbyacceptedcompletedcancelledstatus'),
+        Uri.parse('$baseUrl/ordersbyacceptedcompletedcancelledstatus'),
         headers: {"apikey": "a4db08b7-5729-4ba9-8c08-f2df493465a1"},
         body: {"statusorderid": "2", "user_id": AppConstants.username});
     var data = pendingorderforpantryuserFromJson(response.body.toString());
@@ -197,8 +213,7 @@ String baseUrl = "https://geapps.germanexperts.ae:7013/api";
 
   Future<Pendingorderforpantryuser> pendingOrderForPantry() async {
     final response = await http.post(
-        Uri.parse(
-            '$baseUrl/orderhistorybypendingstatusandpantryuser'),
+        Uri.parse('$baseUrl/orderhistorybypendingstatusandpantryuser'),
         headers: {"apikey": "a4db08b7-5729-4ba9-8c08-f2df493465a1"},
         body: {"statusorderid": "1", "user_id": AppConstants.username});
     var data = pendingorderforpantryuserFromJson(response.body.toString());
@@ -211,16 +226,13 @@ String baseUrl = "https://geapps.germanexperts.ae:7013/api";
 
   Future<ChangeOrderStatus> changeOrderStatus(
       orderId, stOrderId, modifiedBy) async {
-    final response = await http.post(
-        Uri.parse('$baseUrl/editorder'),
-        headers: {
-          "apikey": "a4db08b7-5729-4ba9-8c08-f2df493465a1"
-        },
-        body: {
-          "orderid": orderId,
-          "statusorderid": stOrderId,
-          "modified_by": modifiedBy
-        });
+    final response = await http.post(Uri.parse('$baseUrl/editorder'), headers: {
+      "apikey": "a4db08b7-5729-4ba9-8c08-f2df493465a1"
+    }, body: {
+      "orderid": orderId,
+      "statusorderid": stOrderId,
+      "modified_by": modifiedBy
+    });
     var data = changeOrderStatusFromJson(response.body.toString());
     if (response.statusCode == 200) {
       return data.first;
@@ -231,8 +243,7 @@ String baseUrl = "https://geapps.germanexperts.ae:7013/api";
 
   Future<CanceledAndCompletedOrders> completedAndCanceledOrders(user_id) async {
     final response = await http.post(
-        Uri.parse(
-            '$baseUrl/ordersbycompletedcancelledstatus'),
+        Uri.parse('$baseUrl/ordersbycompletedcancelledstatus'),
         headers: {"apikey": "a4db08b7-5729-4ba9-8c08-f2df493465a1"},
         body: {"user_id": user_id});
     var data = canceledAndCompletedOrdersFromJson(response.body.toString());
@@ -244,9 +255,7 @@ String baseUrl = "https://geapps.germanexperts.ae:7013/api";
   }
 
   Future<RecentOrders> getRecentOrder(String id) async {
-    final response = await http.get(
-        Uri.parse(
-            '$baseUrl/listrecentorder/$id'),
+    final response = await http.get(Uri.parse('$baseUrl/listrecentorder/$id'),
         headers: {"apikey": "a4db08b7-5729-4ba9-8c08-f2df493465a1"});
     var data = recentOrdersFromJson(response.body.toString());
     if (response.statusCode == 200) {
@@ -258,11 +267,11 @@ String baseUrl = "https://geapps.germanexperts.ae:7013/api";
 
   Future<Getpantryid> getpPantryId(id) async {
     final response = await http.post(
-        Uri.parse(
-            '$baseUrl/assignedOfficePantryBYUserId'),
+        Uri.parse('$baseUrl/assignedOfficePantryBYUserId'),
         headers: {"apikey": "a4db08b7-5729-4ba9-8c08-f2df493465a1"},
         body: {"officeid": id});
     var data = getpantryidFromJson(response.body.toString());
+    consolePrint("getPantryId res - ${response?.body?.toString()}");
     if (response.statusCode == 200) {
       return data;
     } else {
@@ -272,8 +281,7 @@ String baseUrl = "https://geapps.germanexperts.ae:7013/api";
 
   Future<Pantryusernotification> pantryNotifications(pantryuserid) async {
     final response = await http.post(
-        Uri.parse(
-            '$baseUrl/listallnotificationbypantryuser'),
+        Uri.parse('$baseUrl/listallnotificationbypantryuser'),
         headers: {"apikey": "a4db08b7-5729-4ba9-8c08-f2df493465a1"},
         body: {"pantryuserid": pantryuserid});
     var data = pantryusernotificationFromJson(response.body.toString());
@@ -287,8 +295,7 @@ String baseUrl = "https://geapps.germanexperts.ae:7013/api";
   Future<Internalnotificationupdate> updatePantryNotifications(
       String pantryuserid, String notificationid) async {
     final response = await http.post(
-        Uri.parse(
-            '$baseUrl/updateinternalnotification'),
+        Uri.parse('$baseUrl/updateinternalnotification'),
         headers: {"apikey": "a4db08b7-5729-4ba9-8c08-f2df493465a1"},
         body: {"pantryuserid": pantryuserid, "notificationid": notificationid});
     var data = internalnotificationupdateFromJson(response.body.toString());
@@ -301,8 +308,7 @@ String baseUrl = "https://geapps.germanexperts.ae:7013/api";
   }
 
   Future<Changefcmtoken> changefcm(String userid, String fcmtoken) async {
-    final response = await http.post(
-        Uri.parse('$baseUrl/updatefcmtoken'),
+    final response = await http.post(Uri.parse('$baseUrl/updatefcmtoken'),
         headers: {"apikey": "a4db08b7-5729-4ba9-8c08-f2df493465a1"},
         body: {"user_id": userid, "fcmtoken": fcmtoken});
     var data = changefcmtokenFromJson(response.body.toString());

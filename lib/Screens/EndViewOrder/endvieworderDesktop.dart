@@ -600,9 +600,9 @@ class EndViewOrderDeskTop extends StatelessWidget {
                                   ? AppConstants.usercategoryId == 1 ||
                                           AppConstants.usercategoryId == 2
                                       ? showAssistanceSuccessDialog(context)
-                                      : alert(context, "User Restricted",
+                                      : alert(context, "User Restricted7",
                                           "Please Contact Administrator")
-                                  : alert(context, "User Restricted",
+                                  : alert(context, "User Restricted8",
                                       "Please Contact Administrator");
                             },
                             child: Align(

@@ -1,0 +1,97 @@
+[
+    {
+        "message": "Successfully logged in",
+        "messagecode": "1001",
+        "userList": [
+            {
+                "user_id": 12,
+                "username": "junaid",
+                "userpassword": "$2b$10$4aDfZFYt2oXKCrvN7EZoTeSeGbcIJUJ.4cb02NQBWF9WmNx9xkddC",
+                "emailid": "mohamed.j@germanexperts.ae",
+                "status": 1,
+                "role_id": 3,
+                "branch_id": 1,
+                "last_login": "2025-11-25T07:02:55.602Z",
+                "useronline_status": false,
+                "isforcefulllogin": "Y",
+                "dashboardurl": null,
+                "cmp_id": 1,
+                "created_by": 1,
+                "created_at": "2023-06-22T11:01:30.453Z",
+                "modified_by": 11,
+                "modified_at": "2025-11-24T13:28:33.355Z",
+                "remark": "",
+                "extensioncode": "518",
+                "officeid": 30,
+                "userimage": "",
+                "usercategory": 1,
+                "crmusercode": null,
+                "isassigned": null,
+                "fcmtoken": "d7rKpi-vTze_R-PyHvNOgR:APA91bHAc5AT1qS351Vm-KgC2LSIjznv5CPRPiAybLhu5ezwPZM6rkzUqoXAOX6IpGTpkN2Iaj5Icf34YWcOoW06alZfskmaoe1rKywM5ZFTFMkhJJsyZ5M",
+                "accesscode": null,
+                "password_migrated": true,
+                "has_order_limit": 1,
+                "privilegearr": [
+                    {
+                        "privilege_id": 53,
+                        "module_id": 1,
+                        "role_id": 3,
+                        "fullgrantaccess": 1,
+                        "readaccess": 1,
+                        "writeaccess": 1,
+                        "modifyaccess": 1,
+                        "deleteaccess": 1,
+                        "created_at": "2023-06-05T13:18:57.561Z",
+                        "created_by": 1,
+                        "modified_at": null,
+                        "modified_by": null
+                    },
+                    {
+                        "privilege_id": 54,
+                        "module_id": 12,
+                        "role_id": 3,
+                        "fullgrantaccess": 1,
+                        "readaccess": 1,
+                        "writeaccess": 1,
+                        "modifyaccess": 1,
+                        "deleteaccess": 1,
+                        "created_at": "2023-06-05T13:18:57.562Z",
+                        "created_by": 1,
+                        "modified_at": null,
+                        "modified_by": null
+                    },
+                    {
+                        "privilege_id": 55,
+                        "module_id": 15,
+                        "role_id": 3,
+                        "fullgrantaccess": 1,
+                        "readaccess": 1,
+                        "writeaccess": 1,
+                        "modifyaccess": 1,
+                        "deleteaccess": 1,
+                        "created_at": "2023-06-05T13:18:57.562Z",
+                        "created_by": 1,
+                        "modified_at": null,
+                        "modified_by": null
+                    }
+                ]
+            }
+        ],
+        "officepantryList": [
+            {
+                "officename": null,
+                "pantryname": null,
+                "user_id": 12,
+                "accesscode": null,
+                "branch_name": "ABUDHABI 1",
+                "cmp_name": "GERMAN EXPERTS",
+                "username": "junaid",
+                "status": 1,
+                "rolename": "end user",
+                "usercategory": 1,
+                "fcmtoken": "d7rKpi-vTze_R-PyHvNOgR:APA91bHAc5AT1qS351Vm-KgC2LSIjznv5CPRPiAybLhu5ezwPZM6rkzUqoXAOX6IpGTpkN2Iaj5Icf34YWcOoW06alZfskmaoe1rKywM5ZFTFMkhJJsyZ5M"
+            }
+        ],
+        "isLogin": "true"
+    }
+]

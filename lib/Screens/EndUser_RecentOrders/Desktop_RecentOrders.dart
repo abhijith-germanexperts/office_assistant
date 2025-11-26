@@ -640,9 +640,9 @@ class _DesktopRecentOrderState extends State<DesktopRecentOrder> {
                         ? AppConstants.usercategoryId == 1 ||
                                 AppConstants.usercategoryId == 2
                             ?   showAssistanceSuccessDialog(context)
-                            : alert(context, "User Restricted",
+                            : alert(context, "User Restricted5",
                                 "Please Contact Administrator")
-                        : alert(context, "User Restricted",
+                        : alert(context, "User Restricted6",
                             "Please Contact Administrator");
                   },
                   child: Row(

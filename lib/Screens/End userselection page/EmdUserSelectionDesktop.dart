@@ -115,7 +115,7 @@ class _EndUserSelectDeskState extends State<EndUserSelectDesk> {
                 ),
                 InkWell(
                   onTap: () {
-                    // print(AppConstants.pantryId);
+                    print(AppConstants.pantryId);
                     AppConstants.pantryId != null
                         ? AppConstants.usercategoryId == 1 ||
                                 AppConstants.usercategoryId == 2
@@ -124,9 +124,9 @@ class _EndUserSelectDeskState extends State<EndUserSelectDesk> {
                                 MaterialPageRoute(
                                     builder: (context) =>
                                         const EndUserPantrymenuBasePage()))
-                            : alert(context, "User Restricted",
+                            : alert(context, "User Restricted3",
                                 "Please Contact Administrator")
-                        : alert(context, "User Restricted",
+                        : alert(context, "User Restricted4",
                             "Please Contact Administrator");
                   },
                   child: Row(
