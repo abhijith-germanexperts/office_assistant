@@ -4,14 +4,18 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 import '../../../services/apiservices.dart';
+
 class MobilePanInventory extends StatefulWidget {
   const MobilePanInventory({Key? key}) : super(key: key);
 
   @override
   State<MobilePanInventory> createState() => _MobilePanInventoryState();
 }
+
 late TabController _tabController;
-class _MobilePanInventoryState extends State<MobilePanInventory> with TickerProviderStateMixin{
+
+class _MobilePanInventoryState extends State<MobilePanInventory>
+    with TickerProviderStateMixin {
   var tabGroup = AutoSizeGroup();
   List<bool> toggleValues = [];
   void initState() {
@@ -20,6 +24,7 @@ class _MobilePanInventoryState extends State<MobilePanInventory> with TickerProv
     _tabController.animateTo(1);
     toggleValues = List.generate(pantryItems.length, (index) => false);
   }
+
   List pantryItems = [
     "Espresso",
     "Cappuccino",
@@ -46,13 +51,13 @@ class _MobilePanInventoryState extends State<MobilePanInventory> with TickerProv
               Container(
                   width: double.maxFinite,
                   height: MediaQuery.of(context).size.height * 0.2,
-                  decoration:  const BoxDecoration(
+                  decoration: const BoxDecoration(
                       image: DecorationImage(
-                        image:
-                        AssetImage("image/rohit-khadgi-lEbR6nR8V1A-unsplash (2).jpg"),
-                        fit: BoxFit.cover,
-                        alignment: Alignment(0.0, 0.3),
-                      )),
+                    image: AssetImage(
+                        "image/rohit-khadgi-lEbR6nR8V1A-unsplash (2).jpg"),
+                    fit: BoxFit.cover,
+                    alignment: Alignment(0.0, 0.3),
+                  )),
                   child: Column(
                     children: [
                       Row(
@@ -67,12 +72,13 @@ class _MobilePanInventoryState extends State<MobilePanInventory> with TickerProv
                                       "image/GE office assistant white.png"))),
                           Padding(
                             padding: EdgeInsets.only(
-                                right: MediaQuery.of(context).size.width * 0.03),
+                                right:
+                                    MediaQuery.of(context).size.width * 0.03),
                             child: Icon(
                               Icons.menu,
                               color: Colors.white,
-                              size:
-                              MediaQuery.of(context).size.shortestSide * 0.04,
+                              size: MediaQuery.of(context).size.shortestSide *
+                                  0.04,
                             ),
                           )
                         ],
@@ -149,9 +155,16 @@ class _MobilePanInventoryState extends State<MobilePanInventory> with TickerProv
                     //       )
                     //   ),
                     // ),
-                    Align(alignment: Alignment.topLeft,child: InkWell(
-                      onTap: (){Navigator.pop(context);},
-                        child: const Icon(Icons.arrow_back_outlined,color: Colors.white,))),
+                    Align(
+                        alignment: Alignment.topLeft,
+                        child: InkWell(
+                            onTap: () {
+                              Navigator.pop(context);
+                            },
+                            child: const Icon(
+                              Icons.arrow_back_outlined,
+                              color: Colors.white,
+                            ))),
                     SizedBox(
                       width: MediaQuery.of(context).size.width * 0.03,
                     ),
@@ -167,22 +180,54 @@ class _MobilePanInventoryState extends State<MobilePanInventory> with TickerProv
                           indicatorPadding: const EdgeInsets.all(10),
                           controller: _tabController,
                           tabs: [
-                            Tab(child: Padding(
-                              padding: const EdgeInsets.all(11.0),
-                              child: AutoSizeText("Coffee",maxLines: 1,minFontSize: 10,style: const TextStyle(fontSize: 30),group: tabGroup,),
-                            ),),
-                            Tab(child: Padding(
-                              padding: const EdgeInsets.all(11.0),
-                              child: AutoSizeText("Tea",maxLines: 1,minFontSize: 10,style: const TextStyle(fontSize: 30),group: tabGroup,),
-                            ),),
-                            Tab(child: Padding(
-                              padding: const EdgeInsets.all(11.0),
-                              child: AutoSizeText("Water",maxLines: 1,minFontSize: 10,style: const TextStyle(fontSize: 30),group: tabGroup,),
-                            ),),
-                            Tab(child: Padding(
-                              padding: const EdgeInsets.all(11.0),
-                              child: AutoSizeText("Pasteries",maxLines: 1,minFontSize: 10,style: const TextStyle(fontSize: 30),group: tabGroup,),
-                            ),),
+                            Tab(
+                              child: Padding(
+                                padding: const EdgeInsets.all(11.0),
+                                child: AutoSizeText(
+                                  "Coffee",
+                                  maxLines: 1,
+                                  minFontSize: 10,
+                                  style: const TextStyle(fontSize: 30),
+                                  group: tabGroup,
+                                ),
+                              ),
+                            ),
+                            Tab(
+                              child: Padding(
+                                padding: const EdgeInsets.all(11.0),
+                                child: AutoSizeText(
+                                  "Tea",
+                                  maxLines: 1,
+                                  minFontSize: 10,
+                                  style: const TextStyle(fontSize: 30),
+                                  group: tabGroup,
+                                ),
+                              ),
+                            ),
+                            Tab(
+                              child: Padding(
+                                padding: const EdgeInsets.all(11.0),
+                                child: AutoSizeText(
+                                  "Water",
+                                  maxLines: 1,
+                                  minFontSize: 10,
+                                  style: const TextStyle(fontSize: 30),
+                                  group: tabGroup,
+                                ),
+                              ),
+                            ),
+                            Tab(
+                              child: Padding(
+                                padding: const EdgeInsets.all(11.0),
+                                child: AutoSizeText(
+                                  "Pasteries",
+                                  maxLines: 1,
+                                  minFontSize: 10,
+                                  style: const TextStyle(fontSize: 30),
+                                  group: tabGroup,
+                                ),
+                              ),
+                            ),
                           ],
                         ),
                       ),
@@ -196,9 +241,15 @@ class _MobilePanInventoryState extends State<MobilePanInventory> with TickerProv
               //   height: MediaQuery.of(context).size.height * 0.01,
               // ),
               // Spacer(),
-              Container(height: 1,width: double.maxFinite,color: Colors.white,),
+              Container(
+                height: 1,
+                width: double.maxFinite,
+                color: Colors.white,
+              ),
               Padding(
-                padding: EdgeInsets.only(left: MediaQuery.of(context).size.width*0.09,right: MediaQuery.of(context).size.width*0.09),
+                padding: EdgeInsets.only(
+                    left: MediaQuery.of(context).size.width * 0.09,
+                    right: MediaQuery.of(context).size.width * 0.09),
                 child: Row(
                   children: [
                     Expanded(
@@ -207,8 +258,24 @@ class _MobilePanInventoryState extends State<MobilePanInventory> with TickerProv
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
-                            Expanded(child: SizedBox(child: AutoSizeText("Item",textAlign: TextAlign.left,style: const TextStyle(fontSize: 24),maxLines: 1,group: headingGroup,))),
-                            Expanded(child: SizedBox(child: AutoSizeText("Availability",textAlign: TextAlign.right,style: const TextStyle(fontSize: 24),maxLines: 1,group: headingGroup,))),
+                            Expanded(
+                                child: SizedBox(
+                                    child: AutoSizeText(
+                              "Item",
+                              textAlign: TextAlign.left,
+                              style: const TextStyle(fontSize: 24),
+                              maxLines: 1,
+                              group: headingGroup,
+                            ))),
+                            Expanded(
+                                child: SizedBox(
+                                    child: AutoSizeText(
+                              "Availability",
+                              textAlign: TextAlign.right,
+                              style: const TextStyle(fontSize: 24),
+                              maxLines: 1,
+                              group: headingGroup,
+                            ))),
                           ],
                         ),
                       ),
@@ -216,17 +283,29 @@ class _MobilePanInventoryState extends State<MobilePanInventory> with TickerProv
                   ],
                 ),
               ),
-              const SizedBox(height: 10,),
-              Container(height: 1,width: double.maxFinite,color: Colors.white,),
-              const SizedBox(height: 10,),
+              const SizedBox(
+                height: 10,
+              ),
+              Container(
+                height: 1,
+                width: double.maxFinite,
+                color: Colors.white,
+              ),
+              const SizedBox(
+                height: 10,
+              ),
               Expanded(
                 child: TabBarView(
                   controller: _tabController,
                   children: [
-                    pantryViewOrderList(context,pantryItems,toggleValues) ?? const Text("Null"),
-                    pantryViewOrderList(context,pantryItems,toggleValues) ?? const Text("Null"),
-                    pantryViewOrderList(context,pantryItems,toggleValues) ?? const Text("Null"),
-                    pantryViewOrderList(context,pantryItems,toggleValues) ?? const Text("Null"),
+                    pantryViewOrderList(context, pantryItems, toggleValues) ??
+                        const Text("Null"),
+                    pantryViewOrderList(context, pantryItems, toggleValues) ??
+                        const Text("Null"),
+                    pantryViewOrderList(context, pantryItems, toggleValues) ??
+                        const Text("Null"),
+                    pantryViewOrderList(context, pantryItems, toggleValues) ??
+                        const Text("Null"),
                   ],
                 ),
               ),
@@ -239,7 +318,7 @@ class _MobilePanInventoryState extends State<MobilePanInventory> with TickerProv
                   child: Align(
                     alignment: Alignment.center,
                     child: AutoSizeText(
-                      "Copyright 2023 © German Experts. All Rights Reserved",
+                      "Copyright ${DateTime.now().year} © German Experts. All Rights Reserved",
                       style: GoogleFonts.inter(
                         textStyle: const TextStyle(color: Color(0xffFFFFFF)),
                       ),
@@ -254,17 +333,15 @@ class _MobilePanInventoryState extends State<MobilePanInventory> with TickerProv
     );
   }
 
-  pantryViewOrderList(BuildContext context,  pantryItems,toggleValues) {
+  pantryViewOrderList(BuildContext context, pantryItems, toggleValues) {
     return FutureBuilder(
         future: client.getInventoryList(),
-        builder: (context,snapshot){
-          if(snapshot.connectionState == ConnectionState.waiting){
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
             return const Center(child: CircularProgressIndicator());
-          } else if (snapshot.hasError){
+          } else if (snapshot.hasError) {
 // return error UI COde
-          } else if(
-          snapshot.hasData
-          ){
+          } else if (snapshot.hasData) {
             return ListView.builder(
               itemCount: snapshot.data!.data!.response!.length,
               itemBuilder: (context, index) {
@@ -285,18 +362,34 @@ class _MobilePanInventoryState extends State<MobilePanInventory> with TickerProv
                           SizedBox(
                             width: MediaQuery.of(context).size.width * 0.024,
                           ),
-                          Container(width: 120,child:  Image(image: NetworkImage(snapshot.data!.data!.response![index].itemimgpath.toString()), fit: BoxFit.cover,
-                            alignment: Alignment(0.0, 0.5),)),
-                          Expanded(child: AutoSizeText(snapshot.data!.data!.response![index].itemname.toString(), style: const TextStyle(color: Colors.white))),
+                          Container(
+                              width: 120,
+                              child: Image(
+                                image: NetworkImage(snapshot
+                                    .data!.data!.response![index].itemimgpath
+                                    .toString()),
+                                fit: BoxFit.cover,
+                                alignment: Alignment(0.0, 0.5),
+                              )),
+                          Expanded(
+                              child: AutoSizeText(
+                                  snapshot.data!.data!.response![index].itemname
+                                      .toString(),
+                                  style: const TextStyle(color: Colors.white))),
                           const Spacer(),
                           Container(
                             decoration: BoxDecoration(
                                 border: Border.all(
 
-                                  // color:toggleValues[index]? CupertinoColors.activeGreen :CupertinoColors.destructiveRed, width: 2),
-                                    color:snapshot.data!.data!.response![index].menustatus==1? CupertinoColors.activeGreen :CupertinoColors.destructiveRed, width: 2),
-                                borderRadius: const BorderRadius.all(Radius.circular(20))
-                            ),
+                                    // color:toggleValues[index]? CupertinoColors.activeGreen :CupertinoColors.destructiveRed, width: 2),
+                                    color: snapshot.data!.data!.response![index]
+                                                .menustatus ==
+                                            1
+                                        ? CupertinoColors.activeGreen
+                                        : CupertinoColors.destructiveRed,
+                                    width: 2),
+                                borderRadius: const BorderRadius.all(
+                                    Radius.circular(20))),
                             child: SizedBox(
                               width: 51,
                               height: 31,
@@ -304,10 +397,23 @@ class _MobilePanInventoryState extends State<MobilePanInventory> with TickerProv
                                 children: [
                                   CupertinoSwitch(
                                     // value: toggleValues[index],
-                                    value: snapshot.data!.data!.response![index].menustatus==1? true : false,
+                                    value: snapshot.data!.data!.response![index]
+                                                .menustatus ==
+                                            1
+                                        ? true
+                                        : false,
                                     onChanged: (value) {
                                       // toggleValues[index] = value;
-                                      alertbox(context, snapshot.data!.data!.response![index].menupantryid.toString(),snapshot.data!.data!.response![index].menustatus==1? "0": "1");
+                                      alertbox(
+                                          context,
+                                          snapshot.data!.data!.response![index]
+                                              .menupantryid
+                                              .toString(),
+                                          snapshot.data!.data!.response![index]
+                                                      .menustatus ==
+                                                  1
+                                              ? "0"
+                                              : "1");
                                     },
                                     trackColor: Colors.transparent,
                                     activeColor: Colors.transparent,
@@ -315,14 +421,31 @@ class _MobilePanInventoryState extends State<MobilePanInventory> with TickerProv
                                   ),
                                   Align(
                                     // alignment: toggleValues[index]? Alignment.centerRight : Alignment.centerLeft,
-                                    alignment: snapshot.data!.data!.response![index].menustatus==1? Alignment.centerRight : Alignment.centerLeft,
+                                    alignment: snapshot.data!.data!
+                                                .response![index].menustatus ==
+                                            1
+                                        ? Alignment.centerRight
+                                        : Alignment.centerLeft,
                                     child: Padding(
                                       // padding:toggleValues[index] ? const EdgeInsets.all(4.0) : const EdgeInsets.all(2.8),
-                                      padding:toggleValues[index] ? const EdgeInsets.all(4.0) : const EdgeInsets.all(2.8),
+                                      padding: toggleValues[index]
+                                          ? const EdgeInsets.all(4.0)
+                                          : const EdgeInsets.all(2.8),
                                       child: Icon(
                                         // toggleValues[index]? Icons.check : Icons.close,
-                                        snapshot.data!.data!.response![index].menustatus==1? Icons.check : Icons.close,
-                                        color:snapshot.data!.data!.response![index].menustatus==1? Colors.green : Colors.red,
+                                        snapshot.data!.data!.response![index]
+                                                    .menustatus ==
+                                                1
+                                            ? Icons.check
+                                            : Icons.close,
+                                        color: snapshot
+                                                    .data!
+                                                    .data!
+                                                    .response![index]
+                                                    .menustatus ==
+                                                1
+                                            ? Colors.green
+                                            : Colors.red,
                                         // color:snapshot.data!.data!.response![index].menustatus==1? Colors.green : Colors.red,
                                       ),
                                     ),
@@ -343,30 +466,27 @@ class _MobilePanInventoryState extends State<MobilePanInventory> with TickerProv
             );
           }
           return Container();
-        }
-    );
+        });
   }
 
-  alertbox(BuildContext context,id,status) {
-    return  showDialog<void>(
+  alertbox(BuildContext context, id, status) {
+    return showDialog<void>(
       context: context,
       // barrierDismissible: false, // user must tap button!
       builder: (BuildContext context) {
         return AlertDialog(
           title: const Text('AlertDialog Title'),
-          content:  SingleChildScrollView(
-              child:FutureBuilder(
-                  future: client.changeInventoryItemstatus(id,status),
-                  builder: (context,snapshot){
-                    if(snapshot.connectionState == ConnectionState.waiting){
+          content: SingleChildScrollView(
+              child: FutureBuilder(
+                  future: client.changeInventoryItemstatus(id, status),
+                  builder: (context, snapshot) {
+                    if (snapshot.connectionState == ConnectionState.waiting) {
                       print("running");
                       return const Center(child: CircularProgressIndicator());
-                    } else if (snapshot.hasError){
+                    } else if (snapshot.hasError) {
                       print(snapshot.error);
-                    } else if(
-                    snapshot.hasData
-                    ){
-                      if(snapshot.data!.messagecode=="1001"){
+                    } else if (snapshot.hasData) {
+                      if (snapshot.data!.messagecode == "1001") {
                         WidgetsBinding.instance!.addPostFrameCallback((_) {
                           setState(() {});
                           Navigator.pop(context);
@@ -374,9 +494,7 @@ class _MobilePanInventoryState extends State<MobilePanInventory> with TickerProv
                       }
                     }
                     return Container();
-                  }
-              )
-          ),
+                  })),
         );
       },
     );

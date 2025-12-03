@@ -26,7 +26,8 @@ class _MobileOnboardingState extends State<MobileOnboarding> {
       "image/onboarding directory image (1).jpg",
       // "image/aaron-huber-8qYE6LGHW-c-unsplash.jpg"
     ];
-    List title = ["Pantry Service", "Directory Service",
+    List title = [
+      "Pantry Service", "Directory Service",
       // "dsfsd"
     ];
     List content = [
@@ -39,13 +40,16 @@ class _MobileOnboardingState extends State<MobileOnboarding> {
       _pageController.dispose();
       super.dispose();
     }
-    return Scaffold(backgroundColor: Colors.black,
+
+    return Scaffold(
+      backgroundColor: Colors.black,
       body: SafeArea(
         child: Container(
           width: double.maxFinite,
           decoration: BoxDecoration(
             image: DecorationImage(
-              image: const AssetImage('image/aaron-huber-8qYE6LGHW-c-unsplash.jpg'),
+              image: const AssetImage(
+                  'image/aaron-huber-8qYE6LGHW-c-unsplash.jpg'),
               fit: BoxFit.cover,
               colorFilter: ColorFilter.mode(
                   Colors.black.withOpacity(0.7), BlendMode.hardLight),
@@ -65,12 +69,14 @@ class _MobileOnboardingState extends State<MobileOnboarding> {
                         width: MediaQuery.of(context).size.width * 0.6,
                         height: MediaQuery.of(context).size.height * 0.1,
                         child: const Image(
-                            image:
-                            AssetImage("image/GE office assistant white.png"))),
+                            image: AssetImage(
+                                "image/GE office assistant white.png"))),
                   ),
                 ),
                 Padding(
-                  padding:  EdgeInsets.only(left: MediaQuery.of(context).size.width*0.1,right: MediaQuery.of(context).size.width*0.101),
+                  padding: EdgeInsets.only(
+                      left: MediaQuery.of(context).size.width * 0.1,
+                      right: MediaQuery.of(context).size.width * 0.101),
                   child: Container(
                     width: MediaQuery.of(context).size.width * 1.1,
                     height: MediaQuery.of(context).size.height * 0.7,
@@ -98,16 +104,37 @@ class _MobileOnboardingState extends State<MobileOnboarding> {
                                     mainAxisAlignment: MainAxisAlignment.start,
                                     children: [
                                       Padding(
-                                        padding:  EdgeInsets.only(left: MediaQuery.of(context).size.width*0.01, right: MediaQuery.of(context).size.width*0.01,top: MediaQuery.of(context).size.height*0.01,),
+                                        padding: EdgeInsets.only(
+                                          left: MediaQuery.of(context)
+                                                  .size
+                                                  .width *
+                                              0.01,
+                                          right: MediaQuery.of(context)
+                                                  .size
+                                                  .width *
+                                              0.01,
+                                          top: MediaQuery.of(context)
+                                                  .size
+                                                  .height *
+                                              0.01,
+                                        ),
                                         child: Container(
-                                            width: MediaQuery.of(context).size.width * 1.9,
-                                            height: MediaQuery.of(context).size.height * 0.3,
+                                            width: MediaQuery.of(context)
+                                                    .size
+                                                    .width *
+                                                1.9,
+                                            height: MediaQuery.of(context)
+                                                    .size
+                                                    .height *
+                                                0.3,
                                             decoration: BoxDecoration(
                                               color: Colors.black,
-                                              borderRadius: BorderRadius.circular(50),
+                                              borderRadius:
+                                                  BorderRadius.circular(50),
                                             ),
                                             child: ClipRRect(
-                                                borderRadius: BorderRadius.circular(23.0),
+                                                borderRadius:
+                                                    BorderRadius.circular(23.0),
                                                 child: Image(
                                                   image: AssetImage(image[i]),
                                                   fit: BoxFit.cover,
@@ -116,26 +143,40 @@ class _MobileOnboardingState extends State<MobileOnboarding> {
                                       // SizedBox(height: 20,),
                                       SizedBox(
                                         width: double.maxFinite,
-                                        height: MediaQuery.of(context).size.height * 0.05,
+                                        height:
+                                            MediaQuery.of(context).size.height *
+                                                0.05,
                                         // color: Colors.red,
                                         child: Center(
-                                          child: AutoSizeText(title[i].toString(),
+                                          child: AutoSizeText(
+                                              title[i].toString(),
                                               maxLines: 1,
                                               minFontSize: 2,
                                               group: myGroup,
                                               style: GoogleFonts.inter(
-                                                textStyle:
-                                                const TextStyle(color: Color(0xffFFFFFF),fontSize: 25),
+                                                textStyle: const TextStyle(
+                                                    color: Color(0xffFFFFFF),
+                                                    fontSize: 25),
                                               )),
                                         ),
                                       ),
                                       // SizedBox(height: 20,),
                                       Expanded(
                                         child: Padding(
-                                          padding:  const EdgeInsets.only(left:4, right: 4,top:4,),
+                                          padding: const EdgeInsets.only(
+                                            left: 4,
+                                            right: 4,
+                                            top: 4,
+                                          ),
                                           child: SizedBox(
-                                              width: MediaQuery.of(context).size.width * 0.7,
-                                              height:MediaQuery.of(context).size.height * 0.11,
+                                              width: MediaQuery.of(context)
+                                                      .size
+                                                      .width *
+                                                  0.7,
+                                              height: MediaQuery.of(context)
+                                                      .size
+                                                      .height *
+                                                  0.11,
                                               // color: Colors.blue,
                                               child: AutoSizeText(content[i],
                                                   maxLines: 8,
@@ -143,7 +184,9 @@ class _MobileOnboardingState extends State<MobileOnboarding> {
                                                   // group: myGroup,
                                                   style: GoogleFonts.inter(
                                                     textStyle: const TextStyle(
-                                                        color: Color(0xffFFFFFF),fontSize: 40),
+                                                        color:
+                                                            Color(0xffFFFFFF),
+                                                        fontSize: 40),
                                                   ))),
                                         ),
                                       ),
@@ -152,80 +195,124 @@ class _MobileOnboardingState extends State<MobileOnboarding> {
                                 }),
                           ),
                         ),
-
                         Padding(
-                          padding:  EdgeInsets.only(left: MediaQuery.of(context).size.width*0.02, right: MediaQuery.of(context).size.width*0.02,top: MediaQuery.of(context).size.height*0.04,),
+                          padding: EdgeInsets.only(
+                            left: MediaQuery.of(context).size.width * 0.02,
+                            right: MediaQuery.of(context).size.width * 0.02,
+                            top: MediaQuery.of(context).size.height * 0.04,
+                          ),
                           child: Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
-                              _currentPageIndex < content.length - 1? InkWell(
-                                onTap: () {
-                                  Navigator.pushReplacement(
-                                      context, MaterialPageRoute(builder: (context) => const LoginBasePage()));
-                                },
-                                child: SizedBox(
-                                    width: MediaQuery.of(context).size.width * 0.05,
-                                    height: MediaQuery.of(context).size.height * 0.05,
-                                    child: Center(
-                                        child: AutoSizeText("skip",
-                                            maxLines: 1,
-                                            minFontSize: 2,
-                                            // group: myGroup,
-                                            style: GoogleFonts.inter(
-                                              textStyle:
-                                              const TextStyle(color: Color(0xffFFFFFF)),
-                                            )))),
-                              ) : Container(),
+                              _currentPageIndex < content.length - 1
+                                  ? InkWell(
+                                      onTap: () {
+                                        Navigator.pushReplacement(
+                                            context,
+                                            MaterialPageRoute(
+                                                builder: (context) =>
+                                                    const LoginBasePage()));
+                                      },
+                                      child: SizedBox(
+                                          width: MediaQuery.of(context)
+                                                  .size
+                                                  .width *
+                                              0.05,
+                                          height: MediaQuery.of(context)
+                                                  .size
+                                                  .height *
+                                              0.05,
+                                          child: Center(
+                                              child: AutoSizeText("skip",
+                                                  maxLines: 1,
+                                                  minFontSize: 2,
+                                                  // group: myGroup,
+                                                  style: GoogleFonts.inter(
+                                                    textStyle: const TextStyle(
+                                                        color:
+                                                            Color(0xffFFFFFF)),
+                                                  )))),
+                                    )
+                                  : Container(),
                               DotsIndicator(
                                 dotsCount: title.length,
                                 position: _currentPageIndex.toDouble(),
                                 decorator: DotsDecorator(
-                                    size: Size.square(MediaQuery.of(context).size.height* 0.01),
-                                    activeSize:Size(MediaQuery.of(context).size.width* 0.05, MediaQuery.of(context).size.height* 0.01),
-                                    activeShape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(MediaQuery.of(context).size.height* 0.01)),
-                                    activeColor: Colors.white
-                                ),
+                                    size: Size.square(
+                                        MediaQuery.of(context).size.height *
+                                            0.01),
+                                    activeSize: Size(
+                                        MediaQuery.of(context).size.width *
+                                            0.05,
+                                        MediaQuery.of(context).size.height *
+                                            0.01),
+                                    activeShape: RoundedRectangleBorder(
+                                        borderRadius: BorderRadius.circular(
+                                            MediaQuery.of(context).size.height *
+                                                0.01)),
+                                    activeColor: Colors.white),
                               ),
-                              _currentPageIndex < content.length - 1?  InkWell(
-                                onTap: () {
-                                  if (_currentPageIndex < content.length - 1) {
-                                    _pageController.nextPage(
-                                      duration: const Duration(milliseconds: 300),
-                                      curve: Curves.easeInOut,
-                                    );
-                                  }
-                                  // print(_currentPageIndex);
-                                },
-                                child: SizedBox(
-                                    width: MediaQuery.of(context).size.width * 0.09,
-                                    height: MediaQuery.of(context).size.height * 0.09,
-                                    child: Center(
-                                        child: AutoSizeText("next",
-                                            maxLines: 1,
-                                            minFontSize: 8,
-                                            group: myButtonGroup,
-                                            style: GoogleFonts.inter(
-                                              textStyle:
-                                              const TextStyle(color: Color(0xffFFFFFF)),
-                                            )))),
-                              ) :   InkWell(
-                                onTap: () {
-                                  Navigator.pushReplacement(
-                                      context, MaterialPageRoute(builder: (context) => const LoginBasePage()));
-                                },
-                                child: SizedBox(
-                                    width: MediaQuery.of(context).size.width * 0.12,
-                                    height: MediaQuery.of(context).size.height * 0.05,
-                                    child: Center(
-                                        child: AutoSizeText("Continue",
-                                            maxLines: 1,
-                                            minFontSize: 8,
-                                            group: myButtonGroup,
-                                            style: GoogleFonts.inter(
-                                              textStyle:
-                                              const TextStyle(color: Color(0xffFFFFFF)),
-                                            )))),
-                              )
+                              _currentPageIndex < content.length - 1
+                                  ? InkWell(
+                                      onTap: () {
+                                        if (_currentPageIndex <
+                                            content.length - 1) {
+                                          _pageController.nextPage(
+                                            duration: const Duration(
+                                                milliseconds: 300),
+                                            curve: Curves.easeInOut,
+                                          );
+                                        }
+                                        // print(_currentPageIndex);
+                                      },
+                                      child: SizedBox(
+                                          width: MediaQuery.of(context)
+                                                  .size
+                                                  .width *
+                                              0.09,
+                                          height: MediaQuery.of(context)
+                                                  .size
+                                                  .height *
+                                              0.09,
+                                          child: Center(
+                                              child: AutoSizeText("next",
+                                                  maxLines: 1,
+                                                  minFontSize: 8,
+                                                  group: myButtonGroup,
+                                                  style: GoogleFonts.inter(
+                                                    textStyle: const TextStyle(
+                                                        color:
+                                                            Color(0xffFFFFFF)),
+                                                  )))),
+                                    )
+                                  : InkWell(
+                                      onTap: () {
+                                        Navigator.pushReplacement(
+                                            context,
+                                            MaterialPageRoute(
+                                                builder: (context) =>
+                                                    const LoginBasePage()));
+                                      },
+                                      child: SizedBox(
+                                          width: MediaQuery.of(context)
+                                                  .size
+                                                  .width *
+                                              0.12,
+                                          height: MediaQuery.of(context)
+                                                  .size
+                                                  .height *
+                                              0.05,
+                                          child: Center(
+                                              child: AutoSizeText("Continue",
+                                                  maxLines: 1,
+                                                  minFontSize: 8,
+                                                  group: myButtonGroup,
+                                                  style: GoogleFonts.inter(
+                                                    textStyle: const TextStyle(
+                                                        color:
+                                                            Color(0xffFFFFFF)),
+                                                  )))),
+                                    )
                               //         TextButton( onPressed: () {}, child: AutoSizeText("Skip",maxLines: 5,minFontSize: 2,style: GoogleFonts.inter(textStyle: TextStyle(color: Color(0xffFFFFFF)),))),
                               //         TextButton(onPressed: () {
                               //   if (_currentPageIndex < content.length - 1) {
@@ -250,7 +337,7 @@ class _MobileOnboardingState extends State<MobileOnboarding> {
                     child: Align(
                       alignment: Alignment.center,
                       child: AutoSizeText(
-                        "Copyright 2023 © German Experts. All Rights Reserved",
+                        "Copyright ${DateTime.now().year} © German Experts. All Rights Reserved",
                         style: GoogleFonts.inter(
                           textStyle: const TextStyle(color: Color(0xffFFFFFF)),
                         ),

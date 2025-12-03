@@ -87,9 +87,8 @@ class _UserDirectoryDesktopState extends State<UserDirectoryDesktop> {
     double height = MediaQuery.of(context).size.height;
     double width = MediaQuery.of(context).size.width;
     // List<Datum> modeltemp = actualDirectory.first.data ?? [];
-    List<Datum> modeltemp = actualDirectory.isNotEmpty
-        ? (actualDirectory.first.data ?? [])
-        : [];
+    List<Datum> modeltemp =
+        actualDirectory.isNotEmpty ? (actualDirectory.first.data ?? []) : [];
     List<Datum> listOfContactbyDepartment = [];
     Set<String> uniqueDepartments = {};
     unFildepartments.insert(0, "All Departments");
@@ -668,7 +667,7 @@ class _UserDirectoryDesktopState extends State<UserDirectoryDesktop> {
                 child: Align(
                   alignment: Alignment.center,
                   child: AutoSizeText(
-                    "Copyright 2023 © German Experts. All Rights Reserved",
+                    "Copyright ${DateTime.now().year} © German Experts. All Rights Reserved",
                     style: GoogleFonts.inter(
                       textStyle: const TextStyle(color: Color(0xffFFFFFF)),
                     ),

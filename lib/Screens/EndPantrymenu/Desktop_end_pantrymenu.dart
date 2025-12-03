@@ -381,15 +381,14 @@ class _DesktopEndPantryMenuState extends State<DesktopEndPantryMenu>
                   ),
                   InkWell(
                     onTap: () {
-                       AppConstants.pantryId != null
-                        ? AppConstants.usercategoryId == 1 ||
-                                AppConstants.usercategoryId == 2
-                            ?   showAssistanceSuccessDialog(context)
-                            : alert(context, "User Restricted1",
-                                "Please Contact Administrator")
-                        : alert(context, "User Restricted2",
-                            "Please Contact Administrator");
-                     
+                      AppConstants.pantryId != null
+                          ? AppConstants.usercategoryId == 1 ||
+                                  AppConstants.usercategoryId == 2
+                              ? showAssistanceSuccessDialog(context)
+                              : alert(context, "User Restricted1",
+                                  "Please Contact Administrator")
+                          : alert(context, "User Restricted2",
+                              "Please Contact Administrator");
                     },
                     child: Row(
                       children: [
@@ -469,7 +468,7 @@ class _DesktopEndPantryMenuState extends State<DesktopEndPantryMenu>
                 child: Align(
                   alignment: Alignment.center,
                   child: AutoSizeText(
-                    "Copyright 2023 © German Experts. All Rights Reserved",
+                    "Copyright ${DateTime.now().year} © German Experts. All Rights Reserved",
                     style: GoogleFonts.inter(
                       textStyle: const TextStyle(color: Color(0xffFFFFFF)),
                     ),
@@ -492,7 +491,9 @@ class _DesktopEndPantryMenuState extends State<DesktopEndPantryMenu>
           } else if (ssnapshot.hasData) {
             List<Response> filteredItems =
                 (ssnapshot.data?.data?.response ?? [])
-                    .where((item) => item.categoryname?.toLowerCase().trim() == category.toLowerCase().trim())
+                    .where((item) =>
+                        item.categoryname?.toLowerCase().trim() ==
+                        category.toLowerCase().trim())
                     .toList();
             List<Response> activeList =
                 filteredItems.where((item) => item.menustatus == 1).toList();

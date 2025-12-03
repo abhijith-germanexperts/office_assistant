@@ -140,33 +140,6 @@ import 'Screens/End userselection page/EmdUserSelectionDesktop.dart';
 import 'Screens/splashScreen.dart';
 import 'firebase/firebase.dart';
 
-// Future<void> main() async {
-//   WidgetsFlutterBinding.ensureInitialized();
-//   SharedPreferences prefs = await SharedPreferences.getInstance();
-//   AppConstants.username = prefs.getString("Login");
-//   AppConstants.roleId = prefs.getInt("Id");
-//   AppConstants.officeId = prefs.getInt("ofcId");
-//   AppConstants.pantryId = prefs.getInt("panrtyId");
-//   AppConstants.name = prefs.getString("Name");
-//   AppConstants.usercategoryId = prefs.getInt("CatId");
-//   AppConstants.userPantryId = prefs.getInt("userpanrtyId");
-//   //print(AppConstants.username);
-//   WidgetsFlutterBinding.ensureInitialized();
-//   if (Platform.isWindows) {
-//     await windowManager.ensureInitialized();
-//     WindowManager.instance.setMinimumSize(const Size(853, 700));
-//     // WindowManager.instance.setMaximumSize(const Size(1200, 600));
-//   } else if (Platform.isAndroid) {
-//     await Firebase.initializeApp();
-//     await FirebaseAPI().iniNotification();
-//   }
-//
-//   audioPlayer = AudioPlayer(
-//     playerId: 'my_unique_playerId',
-//   );
-//   runApp(const BasePage());
-// }
-
 Future<void> main() async {
   // 1. Call this ONLY ONCE at the very start
   WidgetsFlutterBinding.ensureInitialized();
@@ -228,7 +201,23 @@ class BasePage extends StatelessWidget {
       ],
       child: MaterialApp(
           debugShowCheckedModeBanner: false,
-          builder: OneContext().builder,
+
+          // --- FIXED BUILDER START ---
+          builder: (context, child) {
+            // 1. Force the app to ignore system font scaling
+            final MediaQueryData data = MediaQuery.of(context);
+            final Widget fixedChild = MediaQuery(
+              data: data.copyWith(textScaler: TextScaler.noScaling),
+              child: child!,
+            );
+
+            // 2. Pass the fixed child into OneContext's builder
+            // This ensures OneContext works on top of the fixed layout
+            return OneContext().builder(context, fixedChild);
+          },
+          // --- FIXED BUILDER END ---
+
+          navigatorKey: OneContext().key,
           theme: ThemeData(
             textTheme: GoogleFonts.inriaSerifTextTheme(
               Theme.of(context).textTheme.apply(
@@ -238,5 +227,28 @@ class BasePage extends StatelessWidget {
           ),
           home: const SplashScreen()),
     );
+
+    // return MultiProvider(
+    //   providers: [
+    //     ChangeNotifierProvider(
+    //       create: (context) => CartProvider(),
+    //     ),
+    //     ChangeNotifierProvider(
+    //       create: (context) => StringProvider(),
+    //     ),
+    //   ],
+    //   child: MaterialApp(
+    //       debugShowCheckedModeBanner: false,
+    //       builder: OneContext().builder,
+    //       navigatorKey: OneContext().key,
+    //       theme: ThemeData(
+    //         textTheme: GoogleFonts.inriaSerifTextTheme(
+    //           Theme.of(context).textTheme.apply(
+    //                 bodyColor: Colors.white,
+    //               ),
+    //         ),
+    //       ),
+    //       home: const SplashScreen()),
+    // );
   }
 }

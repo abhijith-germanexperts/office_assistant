@@ -107,35 +107,35 @@ class _MyDesktopBodyState extends State<MyDesktopBody> {
                                       Padding(
                                         padding: EdgeInsets.only(
                                           left: MediaQuery.of(context)
-                                              .size
-                                              .width *
+                                                  .size
+                                                  .width *
                                               0.1,
                                           right: MediaQuery.of(context)
-                                              .size
-                                              .width *
+                                                  .size
+                                                  .width *
                                               0.1,
                                           top: MediaQuery.of(context)
-                                              .size
-                                              .height *
+                                                  .size
+                                                  .height *
                                               0.04,
                                         ),
                                         child: Container(
                                             width: MediaQuery.of(context)
-                                                .size
-                                                .width *
+                                                    .size
+                                                    .width *
                                                 0.2,
                                             height: MediaQuery.of(context)
-                                                .size
-                                                .height *
+                                                    .size
+                                                    .height *
                                                 0.3,
                                             decoration: BoxDecoration(
                                               color: Colors.black,
                                               borderRadius:
-                                              BorderRadius.circular(50),
+                                                  BorderRadius.circular(50),
                                             ),
                                             child: ClipRRect(
                                                 borderRadius:
-                                                BorderRadius.circular(23.0),
+                                                    BorderRadius.circular(23.0),
                                                 child: Image(
                                                   image: AssetImage(image[i]),
                                                   fit: BoxFit.cover,
@@ -145,8 +145,8 @@ class _MyDesktopBodyState extends State<MyDesktopBody> {
                                       SizedBox(
                                         width: double.maxFinite,
                                         height:
-                                        MediaQuery.of(context).size.height *
-                                            0.05,
+                                            MediaQuery.of(context).size.height *
+                                                0.05,
                                         // color: Colors.red,
                                         child: Center(
                                           child: AutoSizeText(
@@ -170,12 +170,12 @@ class _MyDesktopBodyState extends State<MyDesktopBody> {
                                           ),
                                           child: SizedBox(
                                               width: MediaQuery.of(context)
-                                                  .size
-                                                  .width *
+                                                      .size
+                                                      .width *
                                                   0.7,
                                               height: MediaQuery.of(context)
-                                                  .size
-                                                  .height *
+                                                      .size
+                                                      .height *
                                                   0.11,
                                               // color: Colors.blue,
                                               child: AutoSizeText(content[i],
@@ -185,7 +185,7 @@ class _MyDesktopBodyState extends State<MyDesktopBody> {
                                                   style: GoogleFonts.inter(
                                                     textStyle: const TextStyle(
                                                         color:
-                                                        Color(0xffFFFFFF),
+                                                            Color(0xffFFFFFF),
                                                         fontSize: 20),
                                                   ))),
                                         ),
@@ -206,33 +206,33 @@ class _MyDesktopBodyState extends State<MyDesktopBody> {
                             children: [
                               _currentPageIndex < content.length - 1
                                   ? InkWell(
-                                onTap: () {
-                                  Navigator.pushReplacement(
-                                      context,
-                                      MaterialPageRoute(
-                                          builder: (context) =>
-                                          const LoginBasePage()));
-                                },
-                                child: SizedBox(
-                                    width: MediaQuery.of(context)
-                                        .size
-                                        .width *
-                                        0.05,
-                                    height: MediaQuery.of(context)
-                                        .size
-                                        .height *
-                                        0.05,
-                                    child: Center(
-                                        child: AutoSizeText("skip",
-                                            maxLines: 1,
-                                            minFontSize: 2,
-                                            // group: myGroup,
-                                            style: GoogleFonts.inter(
-                                              textStyle: const TextStyle(
-                                                  color:
-                                                  Color(0xffFFFFFF)),
-                                            )))),
-                              )
+                                      onTap: () {
+                                        Navigator.pushReplacement(
+                                            context,
+                                            MaterialPageRoute(
+                                                builder: (context) =>
+                                                    const LoginBasePage()));
+                                      },
+                                      child: SizedBox(
+                                          width: MediaQuery.of(context)
+                                                  .size
+                                                  .width *
+                                              0.05,
+                                          height: MediaQuery.of(context)
+                                                  .size
+                                                  .height *
+                                              0.05,
+                                          child: Center(
+                                              child: AutoSizeText("skip",
+                                                  maxLines: 1,
+                                                  minFontSize: 2,
+                                                  // group: myGroup,
+                                                  style: GoogleFonts.inter(
+                                                    textStyle: const TextStyle(
+                                                        color:
+                                                            Color(0xffFFFFFF)),
+                                                  )))),
+                                    )
                                   : Container(),
                               DotsIndicator(
                                 dotsCount: title.length,
@@ -254,68 +254,68 @@ class _MyDesktopBodyState extends State<MyDesktopBody> {
                               ),
                               _currentPageIndex < content.length - 1
                                   ? InkWell(
-                                onTap: () {
-                                  if (_currentPageIndex <
-                                      content.length - 1) {
-                                    _pageController.nextPage(
-                                      duration: const Duration(
-                                          milliseconds: 300),
-                                      curve: Curves.easeInOut,
-                                    );
-                                  }
-                                  _currentPageIndex =
-                                      _currentPageIndex + 1;
-                                  setState(() {});
-                                  // print(_currentPageIndex);
-                                },
-                                child: SizedBox(
-                                    width: MediaQuery.of(context)
-                                        .size
-                                        .width *
-                                        0.05,
-                                    height: MediaQuery.of(context)
-                                        .size
-                                        .height *
-                                        0.05,
-                                    child: Center(
-                                        child: AutoSizeText("next",
-                                            maxLines: 1,
-                                            minFontSize: 2,
-                                            // group: myGroup,
-                                            style: GoogleFonts.inter(
-                                              textStyle: const TextStyle(
-                                                  color:
-                                                  Color(0xffFFFFFF)),
-                                            )))),
-                              )
+                                      onTap: () {
+                                        if (_currentPageIndex <
+                                            content.length - 1) {
+                                          _pageController.nextPage(
+                                            duration: const Duration(
+                                                milliseconds: 300),
+                                            curve: Curves.easeInOut,
+                                          );
+                                        }
+                                        _currentPageIndex =
+                                            _currentPageIndex + 1;
+                                        setState(() {});
+                                        // print(_currentPageIndex);
+                                      },
+                                      child: SizedBox(
+                                          width: MediaQuery.of(context)
+                                                  .size
+                                                  .width *
+                                              0.05,
+                                          height: MediaQuery.of(context)
+                                                  .size
+                                                  .height *
+                                              0.05,
+                                          child: Center(
+                                              child: AutoSizeText("next",
+                                                  maxLines: 1,
+                                                  minFontSize: 2,
+                                                  // group: myGroup,
+                                                  style: GoogleFonts.inter(
+                                                    textStyle: const TextStyle(
+                                                        color:
+                                                            Color(0xffFFFFFF)),
+                                                  )))),
+                                    )
                                   : InkWell(
-                                onTap: () {
-                                  Navigator.pushReplacement(
-                                      context,
-                                      MaterialPageRoute(
-                                          builder: (context) =>
-                                          const LoginBasePage()));
-                                },
-                                child: SizedBox(
-                                    width: MediaQuery.of(context)
-                                        .size
-                                        .width *
-                                        0.05,
-                                    height: MediaQuery.of(context)
-                                        .size
-                                        .height *
-                                        0.05,
-                                    child: Center(
-                                        child: AutoSizeText("Continue",
-                                            maxLines: 1,
-                                            minFontSize: 2,
-                                            // group: myGroup,
-                                            style: GoogleFonts.inter(
-                                              textStyle: const TextStyle(
-                                                  color:
-                                                  Color(0xffFFFFFF)),
-                                            )))),
-                              )
+                                      onTap: () {
+                                        Navigator.pushReplacement(
+                                            context,
+                                            MaterialPageRoute(
+                                                builder: (context) =>
+                                                    const LoginBasePage()));
+                                      },
+                                      child: SizedBox(
+                                          width: MediaQuery.of(context)
+                                                  .size
+                                                  .width *
+                                              0.05,
+                                          height: MediaQuery.of(context)
+                                                  .size
+                                                  .height *
+                                              0.05,
+                                          child: Center(
+                                              child: AutoSizeText("Continue",
+                                                  maxLines: 1,
+                                                  minFontSize: 2,
+                                                  // group: myGroup,
+                                                  style: GoogleFonts.inter(
+                                                    textStyle: const TextStyle(
+                                                        color:
+                                                            Color(0xffFFFFFF)),
+                                                  )))),
+                                    )
                             ],
                           ),
                         ),
@@ -331,7 +331,7 @@ class _MyDesktopBodyState extends State<MyDesktopBody> {
                     child: Align(
                       alignment: Alignment.center,
                       child: AutoSizeText(
-                        "Copyright 2023 © German Experts. All Rights Reserved",
+                        "Copyright ${DateTime.now().year} © German Experts. All Rights Reserved",
                         style: GoogleFonts.inter(
                           textStyle: const TextStyle(color: Color(0xffFFFFFF)),
                         ),

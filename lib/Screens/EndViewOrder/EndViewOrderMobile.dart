@@ -1,12 +1,13 @@
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+
 class EndViewOrderMobile extends StatelessWidget {
   const EndViewOrderMobile({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    List test=[1,2,3,4,5,6,7];
+    List test = [1, 2, 3, 4, 5, 6, 7];
     List pantryItems = [
       "Espresso",
       "Cappuccino",
@@ -31,10 +32,10 @@ class EndViewOrderMobile extends StatelessWidget {
                   height: MediaQuery.of(context).size.height * 0.2,
                   decoration: BoxDecoration(
                       image: DecorationImage(
-                        image:
+                    image:
                         AssetImage("image/end user pantry banner darkened.jpg"),
-                        fit: BoxFit.fill,
-                      )),
+                    fit: BoxFit.fill,
+                  )),
                   child: Column(
                     children: [
                       Row(
@@ -49,12 +50,13 @@ class EndViewOrderMobile extends StatelessWidget {
                                       "image/GE office assistant white.png"))),
                           Padding(
                             padding: EdgeInsets.only(
-                                right: MediaQuery.of(context).size.width * 0.03),
+                                right:
+                                    MediaQuery.of(context).size.width * 0.03),
                             child: Icon(
                               Icons.menu,
                               color: Colors.white,
-                              size:
-                              MediaQuery.of(context).size.shortestSide * 0.04,
+                              size: MediaQuery.of(context).size.shortestSide *
+                                  0.04,
                             ),
                           )
                         ],
@@ -100,36 +102,50 @@ class EndViewOrderMobile extends StatelessWidget {
                   mainAxisAlignment: MainAxisAlignment.start,
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    SizedBox(width: 1,),
+                    SizedBox(
+                      width: 1,
+                    ),
                     Align(
                       alignment: Alignment.topCenter,
                       child: InkWell(
-                          onTap: (){
+                          onTap: () {
                             Navigator.pop(context);
                           },
-                          child: Icon(Icons.arrow_back_rounded,color: Colors.white,)),
+                          child: Icon(
+                            Icons.arrow_back_rounded,
+                            color: Colors.white,
+                          )),
                     ),
                     SizedBox(
                       width: MediaQuery.of(context).size.width * 0.03,
                     ),
                     Spacer(),
-                    AutoSizeText("View Orders",style: TextStyle(color: Colors.white,fontSize: 20),),
-                    Spacer(flex: 1,),
-                    SizedBox(width: 20,)
-
+                    AutoSizeText(
+                      "View Orders",
+                      style: TextStyle(color: Colors.white, fontSize: 20),
+                    ),
+                    Spacer(
+                      flex: 1,
+                    ),
+                    SizedBox(
+                      width: 20,
+                    )
                   ],
                 ),
               ),
               Expanded(
                 child: Padding(
-                  padding:  EdgeInsets.only(left: MediaQuery.of(context).size.width*0.0268,right: MediaQuery.of(context).size.width*0.0268,),
+                  padding: EdgeInsets.only(
+                    left: MediaQuery.of(context).size.width * 0.0268,
+                    right: MediaQuery.of(context).size.width * 0.0268,
+                  ),
                   child: ListView.builder(
                       itemCount: test.last,
-                      itemBuilder: (cntxt,index){
+                      itemBuilder: (cntxt, index) {
                         return Padding(
                           padding: const EdgeInsets.only(bottom: 10.0),
                           child: Container(
-                            height: MediaQuery.of(context).size.height*0.15,
+                            height: MediaQuery.of(context).size.height * 0.15,
                             decoration: BoxDecoration(
                               color: Color(0xff3E3E3E),
                               borderRadius: BorderRadius.circular(10),
@@ -140,56 +156,76 @@ class EndViewOrderMobile extends StatelessWidget {
                               child: Row(
                                 crossAxisAlignment: CrossAxisAlignment.center,
                                 children: [
-                                  const Image(image: AssetImage("image/20002124-d-classic_collection_espresso-cup-expressod.png")),
-                                  Expanded(child: AutoSizeText(pantryItems[index],style: TextStyle(color: Colors.white),)),
+                                  const Image(
+                                      image: AssetImage(
+                                          "image/20002124-d-classic_collection_espresso-cup-expressod.png")),
+                                  Expanded(
+                                      child: AutoSizeText(
+                                    pantryItems[index],
+                                    style: TextStyle(color: Colors.white),
+                                  )),
                                   const Spacer(),
-                                  Row(children: [
-                                    InkWell(
-                                        onTap: () {
-                                        },
-                                        child: Icon(
-                                          Icons.remove,
-                                          color: Colors.white,
-                                          size: MediaQuery.of(context)
-                                              .size
-                                              .width *
-                                              0.055,
-                                        )),
-                                    Padding(
-                                      padding: const EdgeInsets.all(8.0),
-                                      child: Container(
-                                        decoration: BoxDecoration(
-                                          shape: BoxShape.circle,
-                                          border: Border.all(
-                                            color: Colors.white, // Replace with your desired border color
-                                            width: 2, // Replace with your desired border width
+                                  Row(
+                                    children: [
+                                      InkWell(
+                                          onTap: () {},
+                                          child: Icon(
+                                            Icons.remove,
+                                            color: Colors.white,
+                                            size: MediaQuery.of(context)
+                                                    .size
+                                                    .width *
+                                                0.055,
+                                          )),
+                                      Padding(
+                                        padding: const EdgeInsets.all(8.0),
+                                        child: Container(
+                                          decoration: BoxDecoration(
+                                            shape: BoxShape.circle,
+                                            border: Border.all(
+                                              color: Colors
+                                                  .white, // Replace with your desired border color
+                                              width:
+                                                  2, // Replace with your desired border width
+                                            ),
+                                          ),
+                                          child: CircleAvatar(
+                                            radius: MediaQuery.of(context)
+                                                    .size
+                                                    .width *
+                                                0.04,
+                                            backgroundColor: Colors.transparent,
+                                            child: AutoSizeText(
+                                              test[index].toString(),
+                                              style: TextStyle(
+                                                  color: Colors.white),
+                                            ),
                                           ),
                                         ),
-                                        child: CircleAvatar(
-                                          radius: MediaQuery.of(context).size.width*0.04,
-                                          backgroundColor: Colors.transparent,
-                                          child: AutoSizeText(test[index].toString(),style: TextStyle(color: Colors.white),),
-                                        ),
                                       ),
-                                    ),
-                                    InkWell(
-                                        onTap: () {
-
-                                        },
-                                        child: Icon(
-                                          Icons.add,
-                                          opticalSize: 48,
-                                          weight: 200,
-                                          color: Colors.white,
-                                          size: MediaQuery.of(context)
-                                              .size
-                                              .width *
-                                              0.055,
-                                        )),
-                                  ],),
+                                      InkWell(
+                                          onTap: () {},
+                                          child: Icon(
+                                            Icons.add,
+                                            opticalSize: 48,
+                                            weight: 200,
+                                            color: Colors.white,
+                                            size: MediaQuery.of(context)
+                                                    .size
+                                                    .width *
+                                                0.055,
+                                          )),
+                                    ],
+                                  ),
                                   Align(
                                       alignment: Alignment.topRight,
-                                      child: Icon(Icons.close,color: Colors.white,size: MediaQuery.of(context).size.width*0.05,))
+                                      child: Icon(
+                                        Icons.close,
+                                        color: Colors.white,
+                                        size:
+                                            MediaQuery.of(context).size.width *
+                                                0.05,
+                                      ))
                                 ],
                               ),
                             ),
@@ -202,24 +238,28 @@ class EndViewOrderMobile extends StatelessWidget {
               //   height: MediaQuery.of(context).size.height * 0.01,
               // ),
               // Spacer(),
-              const SizedBox(height: 5,),
+              const SizedBox(
+                height: 5,
+              ),
               SizedBox(
-                child:  Container(
-                    height: MediaQuery.of(context).size.height*0.05,
-                    width: MediaQuery.of(context).size.width*0.95,
+                child: Container(
+                    height: MediaQuery.of(context).size.height * 0.05,
+                    width: MediaQuery.of(context).size.width * 0.95,
                     decoration: BoxDecoration(
                       color: Colors.white,
                       borderRadius: BorderRadius.circular(10),
                     ),
                     child: TextFormField(
                       decoration: const InputDecoration(
-                          border:  InputBorder.none,
+                          border: InputBorder.none,
                           hintText: "Add Note....",
                           hintStyle: TextStyle(fontWeight: FontWeight.bold),
-                          focusColor: Colors.white
-                      ),
-                    )),),
-              SizedBox(height: 5,),
+                          focusColor: Colors.white),
+                    )),
+              ),
+              SizedBox(
+                height: 5,
+              ),
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceAround,
                 children: [
@@ -236,12 +276,14 @@ class EndViewOrderMobile extends StatelessWidget {
                             width: 2,
                           ),
                         ),
-                        child:  const CircleAvatar(
+                        child: const CircleAvatar(
                           radius: 16,
                           backgroundColor: Colors.transparent,
                           child: Padding(
                             padding: EdgeInsets.all(5.0),
-                            child: Image(image: AssetImage("image/iconmonstr-headphones-4.png")),
+                            child: Image(
+                                image: AssetImage(
+                                    "image/iconmonstr-headphones-4.png")),
                           ),
                         ),
                       ),
@@ -254,17 +296,17 @@ class EndViewOrderMobile extends StatelessWidget {
                       )
                     ],
                   ),
-
                   Spacer(),
                   Container(
-                    height: MediaQuery.of(context).size.height*0.05,
+                    height: MediaQuery.of(context).size.height * 0.05,
                     child: ElevatedButton(
                       onPressed: () {
                         // Navigator.push(
                         //     context, MaterialPageRoute(builder: (context) => const EndViewOrderBasePage()));
                       },
                       style: const ButtonStyle(
-                          backgroundColor: MaterialStatePropertyAll(Colors.white)),
+                          backgroundColor:
+                              MaterialStatePropertyAll(Colors.white)),
                       child: const Text(
                         "Place Order",
                         style: TextStyle(color: Colors.black),
@@ -285,7 +327,7 @@ class EndViewOrderMobile extends StatelessWidget {
                   child: Align(
                     alignment: Alignment.center,
                     child: AutoSizeText(
-                      "Copyright 2023 © German Experts. All Rights Reserved",
+                      "Copyright ${DateTime.now().year} © German Experts. All Rights Reserved",
                       style: GoogleFonts.inter(
                         textStyle: const TextStyle(color: Color(0xffFFFFFF)),
                       ),

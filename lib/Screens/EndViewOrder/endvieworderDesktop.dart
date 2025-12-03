@@ -922,7 +922,7 @@ class EndViewOrderDeskTop extends StatelessWidget {
                 child: Align(
                   alignment: Alignment.center,
                   child: AutoSizeText(
-                    "Copyright 2023 © German Experts. All Rights Reserved",
+                    "Copyright ${DateTime.now().year} © German Experts. All Rights Reserved",
                     style: GoogleFonts.inter(
                       textStyle: const TextStyle(color: Color(0xffFFFFFF)),
                     ),

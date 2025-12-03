@@ -639,7 +639,7 @@ class _DesktopRecentOrderState extends State<DesktopRecentOrder> {
                     AppConstants.pantryId != null
                         ? AppConstants.usercategoryId == 1 ||
                                 AppConstants.usercategoryId == 2
-                            ?   showAssistanceSuccessDialog(context)
+                            ? showAssistanceSuccessDialog(context)
                             : alert(context, "User Restricted5",
                                 "Please Contact Administrator")
                         : alert(context, "User Restricted6",
@@ -687,7 +687,7 @@ class _DesktopRecentOrderState extends State<DesktopRecentOrder> {
                 child: Align(
                   alignment: Alignment.center,
                   child: AutoSizeText(
-                    "Copyright 2023 © German Experts. All Rights Reserved",
+                    "Copyright ${DateTime.now().year} © German Experts. All Rights Reserved",
                     style: GoogleFonts.inter(
                       textStyle: const TextStyle(color: Color(0xffFFFFFF)),
                     ),

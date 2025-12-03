@@ -1,6 +1,7 @@
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+
 class DesktopEndPantryMenu extends StatefulWidget {
   const DesktopEndPantryMenu({Key? key}) : super(key: key);
 
@@ -24,9 +25,10 @@ class _DesktopEndPantryMenuState extends State<DesktopEndPantryMenu> {
                 height: MediaQuery.of(context).size.height * 0.25,
                 decoration: const BoxDecoration(
                     image: DecorationImage(
-                      image: AssetImage("image/end user pantry banner darkened.jpg"),
-                      fit: BoxFit.fill,
-                    )),
+                  image:
+                      AssetImage("image/end user pantry banner darkened.jpg"),
+                  fit: BoxFit.fill,
+                )),
                 child: Column(
                   children: [
                     Row(
@@ -46,7 +48,7 @@ class _DesktopEndPantryMenuState extends State<DesktopEndPantryMenu> {
                             Icons.menu,
                             color: Colors.white,
                             size:
-                            MediaQuery.of(context).size.shortestSide * 0.04,
+                                MediaQuery.of(context).size.shortestSide * 0.04,
                           ),
                         )
                       ],
@@ -77,22 +79,32 @@ class _DesktopEndPantryMenuState extends State<DesktopEndPantryMenu> {
                             child: Row(
                               mainAxisAlignment: MainAxisAlignment.center,
                               crossAxisAlignment: CrossAxisAlignment.end,
-                              children: [AutoSizeText("Directory",style: GoogleFonts.inriaSerif(
-                                  fontWeight: FontWeight.bold,
-                                  fontSize: 96,
-                                  color: Colors.white),
-                                minFontSize: 5,)],
+                              children: [
+                                AutoSizeText(
+                                  "Directory",
+                                  style: GoogleFonts.inriaSerif(
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 96,
+                                      color: Colors.white),
+                                  minFontSize: 5,
+                                )
+                              ],
                             ),
                           ),
                           Expanded(
                             child: Row(
                               mainAxisAlignment: MainAxisAlignment.center,
                               crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [AutoSizeText("Service",style: GoogleFonts.inriaSerif(
-                                  fontWeight: FontWeight.bold,
-                                  fontSize: 96,
-                                  color: Colors.white),
-                                minFontSize: 5,)],
+                              children: [
+                                AutoSizeText(
+                                  "Service",
+                                  style: GoogleFonts.inriaSerif(
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 96,
+                                      color: Colors.white),
+                                  minFontSize: 5,
+                                )
+                              ],
                             ),
                           ),
                         ],
@@ -100,40 +112,48 @@ class _DesktopEndPantryMenuState extends State<DesktopEndPantryMenu> {
                     ),
                   ],
                 )),
-            SizedBox(height: MediaQuery.of(context).size.height*0.018,),
+            SizedBox(
+              height: MediaQuery.of(context).size.height * 0.018,
+            ),
             Row(
               mainAxisAlignment: MainAxisAlignment.start,
               children: [
                 Padding(
-                  padding:  EdgeInsets.only(left: MediaQuery.of(context).size.width*0.117),
+                  padding: EdgeInsets.only(
+                      left: MediaQuery.of(context).size.width * 0.117),
                   child: InkWell(
-                    onTap: (){
+                    onTap: () {
                       Navigator.pop(context);
                     },
                     child: Container(
                       width: MediaQuery.of(context).size.width * .063,
                       height: MediaQuery.of(context).size.width * 0.02,
                       decoration: BoxDecoration(
-                          border: Border.all(color: Colors.white, width: 2),borderRadius: BorderRadius.circular(MediaQuery.of(context).size.width * .063)),
+                          border: Border.all(color: Colors.white, width: 2),
+                          borderRadius: BorderRadius.circular(
+                              MediaQuery.of(context).size.width * .063)),
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
                           Icon(
                             Icons.arrow_back_rounded,
                             color: Colors.white,
-                            size: MediaQuery.of(context).size.width*0.015,
+                            size: MediaQuery.of(context).size.width * 0.015,
                           ),
-                          SizedBox(width: MediaQuery.of(context).size.width*0.001,),
+                          SizedBox(
+                            width: MediaQuery.of(context).size.width * 0.001,
+                          ),
                           AutoSizeText(
                             "Go back",
                             minFontSize: 2,
                             maxLines: 1,
                             style: GoogleFonts.inriaSerif(
                                 textStyle: TextStyle(
-                                  fontWeight: FontWeight.bold,
-                                  color: Colors.white,
-                                  fontSize: MediaQuery.of(context).size.width*0.009,
-                                )),
+                              fontWeight: FontWeight.bold,
+                              color: Colors.white,
+                              fontSize:
+                                  MediaQuery.of(context).size.width * 0.009,
+                            )),
                           )
                         ],
                       ),
@@ -142,8 +162,12 @@ class _DesktopEndPantryMenuState extends State<DesktopEndPantryMenu> {
                 ),
               ],
             ),
-            SizedBox(height: MediaQuery.of(context).size.height*0.01,),
-            SizedBox(height: MediaQuery.of(context).size.height*0.01,),
+            SizedBox(
+              height: MediaQuery.of(context).size.height * 0.01,
+            ),
+            SizedBox(
+              height: MediaQuery.of(context).size.height * 0.01,
+            ),
             const Spacer(),
             Padding(
               padding: const EdgeInsets.only(left: 8.0, right: 8),
@@ -153,7 +177,7 @@ class _DesktopEndPantryMenuState extends State<DesktopEndPantryMenu> {
                 child: Align(
                   alignment: Alignment.center,
                   child: AutoSizeText(
-                    "Copyright 2023 © German Experts. All Rights Reserved",
+                    "Copyright ${DateTime.now().year} © German Experts. All Rights Reserved",
                     style: GoogleFonts.inter(
                       textStyle: const TextStyle(color: Color(0xffFFFFFF)),
                     ),

@@ -4,6 +4,7 @@ import 'package:google_fonts/google_fonts.dart';
 
 import '../Pantry_View_Order/Base_Pan_ViewOrder.dart';
 import '../pantry_inventory/base_pan_inventory.dart';
+
 class PantryHomeMobileScreen extends StatelessWidget {
   const PantryHomeMobileScreen({Key? key}) : super(key: key);
 
@@ -48,8 +49,8 @@ class PantryHomeMobileScreen extends StatelessWidget {
                         height: MediaQuery.of(context).size.height * 0.1,
                         // color: Colors.red,
                         child: Image(
-                            image:
-                            AssetImage("image/GE office assistant white.png"))),
+                            image: AssetImage(
+                                "image/GE office assistant white.png"))),
                     Padding(
                       padding: EdgeInsets.only(
                           right: MediaQuery.of(context).size.width * 0.03),
@@ -70,43 +71,55 @@ class PantryHomeMobileScreen extends StatelessWidget {
                       Container(
                         // color: Colors.green,
                         child: InkWell(
-                          onTap: (){
+                          onTap: () {
                             Navigator.push(
-                                context, MaterialPageRoute(builder: (context) => const BasePantryViewOrder()));
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) =>
+                                        const BasePantryViewOrder()));
                           },
                           child: Column(
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
                               SizedBox(
-                                  width: MediaQuery.of(context).size.width * 1.0,
-                                  height: MediaQuery.of(context).size.height * 0.1,
+                                  width:
+                                      MediaQuery.of(context).size.width * 1.0,
+                                  height:
+                                      MediaQuery.of(context).size.height * 0.1,
                                   child: Align(
                                     alignment: Alignment.bottomCenter,
-                                    child: AutoSizeText("Orders",group: myOptionGroup,
+                                    child: AutoSizeText(
+                                      "Orders",
+                                      group: myOptionGroup,
                                       minFontSize: 2,
                                       maxLines: 1,
                                       style: GoogleFonts.inriaSerif(
                                           textStyle: TextStyle(
                                               color: Colors.white,
                                               fontSize: 90,
-                                              fontWeight: FontWeight.bold
-                                          )),),
+                                              fontWeight: FontWeight.bold)),
+                                    ),
                                   )),
                               SizedBox(
-                                  width: MediaQuery.of(context).size.width * 1.0,
-                                  height: MediaQuery.of(context).size.height * .2,
+                                  width:
+                                      MediaQuery.of(context).size.width * 1.0,
+                                  height:
+                                      MediaQuery.of(context).size.height * .2,
                                   child: Align(
                                     alignment: Alignment.center,
                                     child: Align(
                                       alignment: Alignment.topCenter,
-                                      child: AutoSizeText("",group: myOptionGroup,
+                                      child: AutoSizeText(
+                                        "",
+                                        group: myOptionGroup,
                                         minFontSize: 2,
                                         maxLines: 1,
                                         style: GoogleFonts.inriaSerif(
                                             textStyle: TextStyle(
-                                              color: Colors.white,
-                                              fontSize: 90,
-                                            )),),
+                                          color: Colors.white,
+                                          fontSize: 90,
+                                        )),
+                                      ),
                                     ),
                                   )),
                             ],
@@ -115,42 +128,54 @@ class PantryHomeMobileScreen extends StatelessWidget {
                       ),
                       // SizedBox(width: 1,),
                       InkWell(
-                        onTap: (){
+                        onTap: () {
                           Navigator.push(
-                              context, MaterialPageRoute(builder: (context) => const BasePanInventory()));
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) =>
+                                      const BasePanInventory()));
                         },
                         child: Container(
                           // color: Colors.yellow,
                           child: Column(
                             children: [
                               SizedBox(
-                                  width: MediaQuery.of(context).size.width * 0.4,
-                                  height: MediaQuery.of(context).size.height * 0.2,
+                                  width:
+                                      MediaQuery.of(context).size.width * 0.4,
+                                  height:
+                                      MediaQuery.of(context).size.height * 0.2,
                                   child: Align(
                                     alignment: Alignment.bottomCenter,
-                                    child: AutoSizeText("Inventory",group: myOptionGroup,
+                                    child: AutoSizeText(
+                                      "Inventory",
+                                      group: myOptionGroup,
                                       minFontSize: 2,
                                       maxLines: 1,
                                       style: GoogleFonts.inriaSerif(
                                           textStyle: TextStyle(
                                               color: Colors.white,
                                               fontSize: 90,
-                                              fontWeight: FontWeight.bold
-                                          )),),
+                                              fontWeight: FontWeight.bold)),
+                                    ),
                                   )),
                               SizedBox(
-                                  width: MediaQuery.of(context).size.width * 0.4,
-                                  height: MediaQuery.of(context).size.height * 0.1,
+                                  width:
+                                      MediaQuery.of(context).size.width * 0.4,
+                                  height:
+                                      MediaQuery.of(context).size.height * 0.1,
                                   child: Align(
                                     alignment: Alignment.topCenter,
-                                    child: AutoSizeText("",group: myOptionGroup,
+                                    child: AutoSizeText(
+                                      "",
+                                      group: myOptionGroup,
                                       minFontSize: 2,
                                       maxLines: 1,
                                       style: GoogleFonts.inriaSerif(
                                           textStyle: TextStyle(
-                                            color: Colors.white,
-                                            fontSize: 90,
-                                          )),),
+                                        color: Colors.white,
+                                        fontSize: 90,
+                                      )),
+                                    ),
                                   )),
                             ],
                           ),
@@ -243,7 +268,7 @@ class PantryHomeMobileScreen extends StatelessWidget {
                   child: Align(
                     alignment: Alignment.center,
                     child: AutoSizeText(
-                      "Copyright 2023 © German Experts. All Rights Reserved",
+                      "Copyright ${DateTime.now().year} © German Experts. All Rights Reserved",
                       style: GoogleFonts.inter(
                         textStyle: TextStyle(color: Color(0xffFFFFFF)),
                       ),

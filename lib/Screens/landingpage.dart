@@ -104,7 +104,6 @@ class _LandingPageState extends State<LandingPage> {
                               AutoSizeText(title[i].toString().toUpperCase(),
                                   maxLines: 1,
                                   minFontSize: 2,
-
                                   style: GoogleFonts.inter(
                                     textStyle:
                                         TextStyle(color: Color(0xffFFFFFF)),
@@ -239,7 +238,7 @@ class _LandingPageState extends State<LandingPage> {
                 child: Align(
                   alignment: Alignment.center,
                   child: AutoSizeText(
-                    "Copyright 2023 © German Experts. All Rights Reserved",
+                    "Copyright ${DateTime.now().year} © German Experts. All Rights Reserved",
                     style: GoogleFonts.inter(
                       textStyle: TextStyle(color: Color(0xffFFFFFF)),
                     ),
