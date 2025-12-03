@@ -1,3 +1,5 @@
+we need to change the windows CMakeLists.txt file to this
+
 # Project-level configuration.
 cmake_minimum_required(VERSION 3.14)
 project(ge_assistant LANGUAGES CXX)
