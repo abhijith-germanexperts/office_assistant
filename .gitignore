@@ -7,3 +7,23 @@
 /android/.gradle/
 /android/.kotlin/
 /android/.gradle/
+
+# Flutter/Dart/Pub
+.flutter-plugins
+.flutter-plugins-dependencies
+
+# Android/iOS generated
+**/android/local.properties
+**/ios/Flutter/Generated.xcconfig
+**/ios/Flutter/flutter_export_environment.sh
+**/macos/Flutter/ephemeral/
+
+# iOS/Mac CocoaPods & Generated files
+**/ios/Pods/
+**/ios/.symlinks/
+**/ios/Flutter/flutter_assets/
+**/ios/Flutter/ephemeral/
+**/macos/Pods/
+
+# Native build generated
+**/android/.cxx/
