@@ -6,6 +6,7 @@ import 'package:ge_assistant/Screens/End%20userselection%20page/EmdUserSelection
 import 'package:ge_assistant/models/check_order_lmit/checkuserorderlimitmodel.dart';
 import 'package:ge_assistant/services/apiservices.dart';
 import 'package:ge_assistant/utils/common_class/console_print.dart';
+import 'package:ge_assistant/utils/common_class/snackbar_utils.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
 import 'package:flutter_inset_shadow/flutter_inset_shadow.dart';
@@ -46,9 +47,11 @@ Widget customRecentOrderListExpanded(
     final categoryId = foodcategoryid;
     if (categoryId == null) {
       ScaffoldMessenger.of(context).clearSnackBars();
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Missing category ID.')),
-      );
+      showSnackBarTop(message: 'Missing category ID.');
+
+      // ScaffoldMessenger.of(context).showSnackBar(
+      //   const SnackBar(content: Text('Missing category ID.')),
+      // );
       return null;
     }
 
@@ -62,9 +65,12 @@ Widget customRecentOrderListExpanded(
 
       if (model == null) {
         ScaffoldMessenger.of(context).clearSnackBars();
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Unable to verify order limit.')),
-        );
+        showSnackBarTop(message: 'Unable to verify order limit.');
+        // ScaffoldMessenger.of(context).showSnackBar(
+        //   const SnackBar(
+        //     content: Text('Unable to verify order limit.'),
+        //   ),
+        // );
         return null;
       }
 
@@ -72,9 +78,10 @@ Widget customRecentOrderListExpanded(
 
       if (data == null) {
         ScaffoldMessenger.of(context).clearSnackBars();
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Invalid limit data received.')),
-        );
+        showSnackBarTop(message: 'Invalid limit data received.');
+        // ScaffoldMessenger.of(context).showSnackBar(
+        //   const SnackBar(content: Text('Invalid limit data received.')),
+        // );
         return true;
       }
 
@@ -111,17 +118,19 @@ Widget customRecentOrderListExpanded(
         }
       } else {
         ScaffoldMessenger.of(context).clearSnackBars();
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-              content: Text('Could not determine order eligibility.')),
-        );
+        showSnackBarTop(message: 'Could not determine order eligibility.');
+        // ScaffoldMessenger.of(context).showSnackBar(
+        //   const SnackBar(
+        //       content: Text('Could not determine order eligibility.')),
+        // );
         return false;
       }
     } catch (e) {
       ScaffoldMessenger.of(context).clearSnackBars();
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Error: ${e.toString()}')),
-      );
+      showSnackBarTop(message: 'Error: ${e.toString()}');
+      // ScaffoldMessenger.of(context).showSnackBar(
+      //   SnackBar(content: Text('Error: ${e.toString()}')),
+      // );
       return false;
     } finally {
       setState(() => isCheckingLimit = false);
@@ -251,13 +260,16 @@ Widget customRecentOrderListExpanded(
                                     ""); //TODO:commented for testing 26 Nov 25 26 11 25
                               } else {
                                 ScaffoldMessenger.of(context).clearSnackBars();
-                                ScaffoldMessenger.of(context).showSnackBar(
-                                  const SnackBar(
-                                    content: Text(
-                                      'You have reached your order limit for this category.',
-                                    ),
-                                  ),
-                                );
+                                showSnackBarTop(
+                                    message:
+                                        'You have reached your order limit for this category.');
+                                // ScaffoldMessenger.of(context).showSnackBar(
+                                //   const SnackBar(
+                                //     content: Text(
+                                //       'You have reached your order limit for this category.',
+                                //     ),
+                                //   ),
+                                // );
                               }
                             },
                       style: ButtonStyle(

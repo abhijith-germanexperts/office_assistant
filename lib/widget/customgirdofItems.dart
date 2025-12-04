@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:ge_assistant/models/check_order_lmit/checkuserorderlimitmodel.dart';
 import 'package:ge_assistant/models/endusermenumodel.dart';
 import 'package:ge_assistant/services/apiservices.dart';
+import 'package:ge_assistant/utils/common_class/snackbar_utils.dart';
 import 'package:provider/provider.dart';
 
 import '../models/inventorylistmodel.dart';
@@ -14,16 +15,15 @@ Widget customGirdview(
   bool isSelected = false;
   bool isCheckingLimit = false;
 
-
-
   Future<void> checkOrderLimit(StateSetter setState) async {
     if (isCheckingLimit) return;
     final categoryId = menuitem?.foodcategoryid;
     if (categoryId == null) {
       ScaffoldMessenger.of(context).clearSnackBars();
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Missing category ID.')),
-      );
+      showSnackBarTop(message: 'Missing category ID.');
+      // ScaffoldMessenger.of(context).showSnackBar(
+      //   const SnackBar(content: Text('Missing category ID.')),
+      // );
       return;
     }
 
@@ -33,13 +33,14 @@ Widget customGirdview(
       final client = ApiProvider();
       // The API client returns a single nullable object, not a list.
       final CheckUserOrderLimit? model =
-      await client.checkUserOrderLimit(categoryId);
+          await client.checkUserOrderLimit(categoryId);
 
       if (model == null) {
         ScaffoldMessenger.of(context).clearSnackBars();
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Unable to verify order limit.')),
-        );
+        showSnackBarTop(message: 'Unable to verify order limit.');
+        // ScaffoldMessenger.of(context).showSnackBar(
+        //   const SnackBar(content: Text('Unable to verify order limit.')),
+        // );
         return;
       }
 
@@ -47,19 +48,21 @@ Widget customGirdview(
 
       if (data == null) {
         ScaffoldMessenger.of(context).clearSnackBars();
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Invalid limit data received.')),
-        );
+        showSnackBarTop(message: 'Invalid limit data received.');
+        // ScaffoldMessenger.of(context).showSnackBar(
+        //   const SnackBar(content: Text('Invalid limit data received.')),
+        // );
         return;
       }
 
       // Condition 1: Unlimited category
       if (data.hasUserLimit == false || data.categoryType == 'unlimited') {
         provider.addToCart(menuitem);
-        ScaffoldMessenger.of(context).clearSnackBars();
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Added to cart.')),
-        );
+        // ScaffoldMessenger.of(context).clearSnackBars();
+        // showSnackBarTop(message: 'Added to cart.');
+        // ScaffoldMessenger.of(context).showSnackBar(
+        //   const SnackBar(content: Text('Added to cart.')),
+        // );
       }
       // Condition 2: Limited category
       else if (data.hasUserLimit == true && data.categoryType == 'limited') {
@@ -73,35 +76,41 @@ Widget customGirdview(
 
         if (quantityInCart < (data.balance ?? 0)) {
           provider.addToCart(menuitem);
-          ScaffoldMessenger.of(context).clearSnackBars();
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('Added to cart.')),
-          );
+          // ScaffoldMessenger.of(context).clearSnackBars();
+          // showSnackBarTop(message: 'Added to cart.');
+          // ScaffoldMessenger.of(context).showSnackBar(
+          //   const SnackBar(content: Text('Added to cart.')),
+          // );
         } else {
           ScaffoldMessenger.of(context).clearSnackBars();
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-              content: Text('You have reached your order limit for this category.'),
-            ),
-          );
+          //show the snack bar here
+          showSnackBarTop(
+              message: 'You have reached your order limit for this category.');
+          // ScaffoldMessenger.of(context).showSnackBar(
+          //   const SnackBar(
+          //     content:
+          //         Text('You have reached your order limit for this category.'),
+          //   ),
+          // );
         }
       } else {
         ScaffoldMessenger.of(context).clearSnackBars();
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Could not determine order eligibility.')),
-        );
+        showSnackBarTop(message: 'Could not determine order eligibility.');
+        // ScaffoldMessenger.of(context).showSnackBar(
+        //   const SnackBar(
+        //       content: Text('Could not determine order eligibility.')),
+        // );
       }
     } catch (e) {
       ScaffoldMessenger.of(context).clearSnackBars();
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Error: ${e.toString()}')),
-      );
+      showSnackBarTop(message: 'Error: ${e.toString()}');
+      // ScaffoldMessenger.of(context).showSnackBar(
+      //   SnackBar(content: Text('Error: ${e.toString()}')),
+      // );
     } finally {
       setState(() => isCheckingLimit = false);
     }
   }
-
-
 
   // Future<void> checkOrderLimit(StateSetter setState) async {
   //   if (isCheckingLimit) return;
@@ -173,85 +182,84 @@ Widget customGirdview(
                     return menuitem.itemname == (oldValue.item.itemname);
                   }).isEmpty;
                   int selectesIndex = cartItems.indexWhere(
-                          (element) => element.item.itemname == menuitem.itemname);
+                      (element) => element.item.itemname == menuitem.itemname);
                   return checkValue == true
                       ? Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      InkWell(
-                        onTap: () {
-                          checkOrderLimit(setState);
-                        },
-                        child: Padding(
-                          padding: const EdgeInsets.only(bottom: 8.0),
-                          child: Icon(
-                            Icons.add_circle_outline_sharp,
-                            color: Colors.white,
-                            size:
-                            MediaQuery.of(context).size.width * 0.03,
-                          ),
-                        ),
-                      ),
-                    ],
-                  )
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            InkWell(
+                              onTap: () {
+                                checkOrderLimit(setState);
+                              },
+                              child: Padding(
+                                padding: const EdgeInsets.only(bottom: 8.0),
+                                child: Icon(
+                                  Icons.add_circle_outline_sharp,
+                                  color: Colors.white,
+                                  size:
+                                      MediaQuery.of(context).size.width * 0.03,
+                                ),
+                              ),
+                            ),
+                          ],
+                        )
                       : Padding(
-                    padding: const EdgeInsets.only(bottom: 8.0),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        InkWell(
-                          onTap: () {
-                            cart.removeFromCart(
-                                cartItems[selectesIndex].item);
-                          },
-                          child: Icon(
-                            Icons.remove,
-                            opticalSize: 48,
-                            weight: 200,
-                            color: Colors.white,
-                            size:
-                            MediaQuery.of(context).size.width * 0.03,
-                          ),
-                        ),
-                        Container(
-                          decoration: BoxDecoration(
-                            shape: BoxShape.circle,
-                            border: Border.all(
-                              color: Colors.white,
-                              width: 2,
-                            ),
-                          ),
-                          child: CircleAvatar(
-                            radius: 16,
-                            backgroundColor: Colors.transparent,
-                            child: Text(
-                              cartItems[selectesIndex]
-                                  .quantity
-                                  .toString(),
-                              style:
-                              const TextStyle(color: Colors.white),
-                            ),
-                          ),
-                        ),
-                        InkWell(
-                          onTap: () {
-                            checkOrderLimit(setState);
+                          padding: const EdgeInsets.only(bottom: 8.0),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              InkWell(
+                                onTap: () {
+                                  cart.removeFromCart(
+                                      cartItems[selectesIndex].item);
+                                },
+                                child: Icon(
+                                  Icons.remove,
+                                  opticalSize: 48,
+                                  weight: 200,
+                                  color: Colors.white,
+                                  size:
+                                      MediaQuery.of(context).size.width * 0.03,
+                                ),
+                              ),
+                              Container(
+                                decoration: BoxDecoration(
+                                  shape: BoxShape.circle,
+                                  border: Border.all(
+                                    color: Colors.white,
+                                    width: 2,
+                                  ),
+                                ),
+                                child: CircleAvatar(
+                                  radius: 16,
+                                  backgroundColor: Colors.transparent,
+                                  child: Text(
+                                    cartItems[selectesIndex]
+                                        .quantity
+                                        .toString(),
+                                    style: const TextStyle(color: Colors.white),
+                                  ),
+                                ),
+                              ),
+                              InkWell(
+                                onTap: () {
+                                  checkOrderLimit(setState);
 
-                            // cart.addToCart(
-                            //     cartItems[selectesIndex].item);
-                          },
-                          child: Icon(
-                            Icons.add,
-                            opticalSize: 48,
-                            weight: 200,
-                            color: Colors.white,
-                            size:
-                            MediaQuery.of(context).size.width * 0.03,
+                                  // cart.addToCart(
+                                  //     cartItems[selectesIndex].item);
+                                },
+                                child: Icon(
+                                  Icons.add,
+                                  opticalSize: 48,
+                                  weight: 200,
+                                  color: Colors.white,
+                                  size:
+                                      MediaQuery.of(context).size.width * 0.03,
+                                ),
+                              ),
+                            ],
                           ),
-                        ),
-                      ],
-                    ),
-                  );
+                        );
                 },
               ),
               Container(
