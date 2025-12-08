@@ -249,35 +249,47 @@ class _DesktopEndPantryMenuState extends State<DesktopEndPantryMenu>
                         controller: _tabController,
                         tabs: [
                           Tab(
-                            child: AutoSizeText(
-                              "Coffee",
-                              maxLines: 1,
-                              minFontSize: 10,
-                              group: categoryGroup,
+                            child: Padding(
+                              padding: tabPadding(),
+                              child: AutoSizeText(
+                                "Coffee",
+                                maxLines: 1,
+                                minFontSize: 10,
+                                group: categoryGroup,
+                              ),
                             ),
                           ),
                           Tab(
-                            child: AutoSizeText(
-                              "Tea",
-                              maxLines: 1,
-                              minFontSize: 10,
-                              group: categoryGroup,
+                            child: Padding(
+                              padding: tabPadding(),
+                              child: AutoSizeText(
+                                "Tea",
+                                maxLines: 1,
+                                minFontSize: 10,
+                                group: categoryGroup,
+                              ),
                             ),
                           ),
                           Tab(
-                            child: AutoSizeText(
-                              "Water",
-                              maxLines: 1,
-                              minFontSize: 10,
-                              group: categoryGroup,
+                            child: Padding(
+                              padding: tabPadding(),
+                              child: AutoSizeText(
+                                "Water",
+                                maxLines: 1,
+                                minFontSize: 10,
+                                group: categoryGroup,
+                              ),
                             ),
                           ),
                           Tab(
-                            child: AutoSizeText(
-                              "Pastries",
-                              maxLines: 1,
-                              minFontSize: 10,
-                              group: categoryGroup,
+                            child: Padding(
+                              padding: tabPadding(),
+                              child: AutoSizeText(
+                                "Pastries",
+                                maxLines: 1,
+                                minFontSize: 10,
+                                group: categoryGroup,
+                              ),
                             ),
                           ),
                         ],
@@ -481,6 +493,8 @@ class _DesktopEndPantryMenuState extends State<DesktopEndPantryMenu>
           ],
         ));
   }
+
+  EdgeInsets tabPadding() => const EdgeInsets.all(8.0);
 
   buildGridView(BuildContext context, provider, String category) {
     return FutureBuilder(
