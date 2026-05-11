@@ -1,6 +1,7 @@
 import 'dart:ffi';
 
 import 'package:auto_size_text/auto_size_text.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:ge_assistant/Constants/appconst.dart';
@@ -28,16 +29,19 @@ class UserDirectoryDesktop extends StatefulWidget {
 }
 
 class _UserDirectoryDesktopState extends State<UserDirectoryDesktop> {
-
   // --- NEW VARIABLES FOR SPEECH TO TEXT ---
   final SpeechToText _speechToText = SpeechToText();
   bool _speechEnabled = false;
 
-
   // --- SPEECH TO TEXT METHODS ---
   void _initSpeech() async {
-    _speechEnabled = await _speechToText.initialize();
-    setState(() {});
+    _speechEnabled = await _speechToText.initialize(
+      onStatus: (status) {
+        if (mounted) setState(() {}); // Add if (mounted)
+      },
+      onError: (error) => print('Speech Error: $error'),
+    );
+    if (mounted) setState(() {}); // Add if (mounted)
   }
 
   void _startListening() async {
@@ -52,9 +56,13 @@ class _UserDirectoryDesktopState extends State<UserDirectoryDesktop> {
 
   void _onSpeechResult(result) {
     setState(() {
-      // Put the recognized words into the text box
       _textEditingController.text = result.recognizedWords;
-      // Trigger the search immediately!
+
+      // ADD THIS: Moves the blinking cursor to the end of the spoken words
+      _textEditingController.selection = TextSelection.fromPosition(
+        TextPosition(offset: _textEditingController.text.length),
+      );
+
       applyFilters();
     });
   }
@@ -66,10 +74,10 @@ class _UserDirectoryDesktopState extends State<UserDirectoryDesktop> {
   ApiProvider client = ApiProvider();
   int _searchIndex = 0;
   final alphabets =
-  List.generate(26, (index) => String.fromCharCode(index + 65));
+      List.generate(26, (index) => String.fromCharCode(index + 65));
   final ItemScrollController _itemScrollController = ItemScrollController();
   final ItemPositionsListener _itemPositionsListener =
-  ItemPositionsListener.create();
+      ItemPositionsListener.create();
   List<Datum> check = [];
   late List<DirectoryModel> directoryFilter = [];
   late List<DirectoryModel> actualDirectory = [];
@@ -86,7 +94,8 @@ class _UserDirectoryDesktopState extends State<UserDirectoryDesktop> {
   String lastRefreshTime = "";
 
   TextEditingController _textEditingController = TextEditingController();
-  TextEditingController _departmenttextEditingController = TextEditingController();
+  TextEditingController _departmenttextEditingController =
+      TextEditingController();
 
   // --- UNIFIED FILTER FUNCTION ---
   void applyFilters() {
@@ -95,7 +104,9 @@ class _UserDirectoryDesktopState extends State<UserDirectoryDesktop> {
     List<Datum> filteredData = allData.where((element) {
       // 1. Check Name Search text box
       bool matchesName = _textEditingController.text.isEmpty ||
-          (element.employeename ?? "").toLowerCase().contains(_textEditingController.text.toLowerCase());
+          (element.employeename ?? "")
+              .toLowerCase()
+              .contains(_textEditingController.text.toLowerCase());
 
       // 2. Check Branch Dropdown
       bool matchesBranch = selectedBranch == 'All' ||
@@ -106,10 +117,16 @@ class _UserDirectoryDesktopState extends State<UserDirectoryDesktop> {
           (element.departmentname ?? "") == selectedDepartment;
 
       // 4. Check Top Department Search box (if still used)
-      bool matchesTopDeptSearch = _departmenttextEditingController.text.isEmpty ||
-          (element.departmentname ?? "").toLowerCase().contains(_departmenttextEditingController.text.toLowerCase());
+      bool matchesTopDeptSearch = _departmenttextEditingController
+              .text.isEmpty ||
+          (element.departmentname ?? "")
+              .toLowerCase()
+              .contains(_departmenttextEditingController.text.toLowerCase());
 
-      return matchesName && matchesBranch && matchesDepartment && matchesTopDeptSearch;
+      return matchesName &&
+          matchesBranch &&
+          matchesDepartment &&
+          matchesTopDeptSearch;
     }).toList();
 
     setState(() {
@@ -117,6 +134,7 @@ class _UserDirectoryDesktopState extends State<UserDirectoryDesktop> {
       directoryFilter.add(DirectoryModel(data: filteredData));
     });
   }
+
 // --- NEW VARIABLE FOR REFRESH TIME ---
 
   bool isRefreshing = false; // <--- ADD THIS LINE
@@ -124,25 +142,23 @@ class _UserDirectoryDesktopState extends State<UserDirectoryDesktop> {
   // --- UPDATED REFRESH FUNCTION ---
   void refreshStatus() async {
     setState(() {
-      isRefreshing = true; // Start the loader
+      isRefreshing = true;
     });
 
-    // Call the API again
     status = client.getloginusers(AppConstants.token ?? "");
-
-    // Wait for the data to actually arrive
     await status;
 
-    setState(() {
-      isRefreshing = false; // Stop the loader
+    if (mounted) { // Add if (mounted) check here
+      setState(() {
+        isRefreshing = false;
 
-      // Update the timestamp ONLY after successful fetch
-      DateTime now = DateTime.now();
-      int hour = now.hour > 12 ? now.hour - 12 : (now.hour == 0 ? 12 : now.hour);
-      String amPm = now.hour >= 12 ? 'PM' : 'AM';
-      String minute = now.minute.toString().padLeft(2, '0');
-      lastRefreshTime = "$hour:$minute $amPm";
-    });
+        DateTime now = DateTime.now();
+        int hour = now.hour > 12 ? now.hour - 12 : (now.hour == 0 ? 12 : now.hour);
+        String amPm = now.hour >= 12 ? 'PM' : 'AM';
+        String minute = now.minute.toString().padLeft(2, '0');
+        lastRefreshTime = "$hour:$minute $amPm";
+      });
+    }
   }
 
   @override
@@ -162,11 +178,13 @@ class _UserDirectoryDesktopState extends State<UserDirectoryDesktop> {
     Set<String> uniqueDepts = {};
     Set<String> uniqueBranches = {};
     for (var datum in actualDirectory.first.data ?? []) {
-      if (datum.departmentname != null && !uniqueDepts.contains(datum.departmentname)) {
+      if (datum.departmentname != null &&
+          !uniqueDepts.contains(datum.departmentname)) {
         uniqueDepts.add(datum.departmentname!);
         departmentList.add(datum.departmentname!);
       }
-      if (datum.branchName != null && !uniqueBranches.contains(datum.branchName)) {
+      if (datum.branchName != null &&
+          !uniqueBranches.contains(datum.branchName)) {
         uniqueBranches.add(datum.branchName!);
         branchList.add(datum.branchName!);
       }
@@ -203,9 +221,9 @@ class _UserDirectoryDesktopState extends State<UserDirectoryDesktop> {
                 height: MediaQuery.of(context).size.height * 0.25,
                 decoration: const BoxDecoration(
                     image: DecorationImage(
-                      image: AssetImage("image/end user directory banner.jpg"),
-                      fit: BoxFit.fill,
-                    )),
+                  image: AssetImage("image/end user directory banner.jpg"),
+                  fit: BoxFit.fill,
+                )),
                 child: Column(
                   children: [
                     Row(
@@ -224,22 +242,22 @@ class _UserDirectoryDesktopState extends State<UserDirectoryDesktop> {
                             menuList: [
                               PopupMenuItem(
                                   child: Column(
-                                    children: [
-                                      Row(
-                                        mainAxisAlignment:
+                                children: [
+                                  Row(
+                                    mainAxisAlignment:
                                         MainAxisAlignment.spaceBetween,
-                                        children: [
-                                          Text(
-                                            "Hello ${AppConstants.name}"
-                                                .toUpperCase(),
-                                            style: const TextStyle(
-                                                color: Colors.black),
-                                          ),
-                                          const Icon(Icons.close)
-                                        ],
+                                    children: [
+                                      Text(
+                                        "Hello ${AppConstants.name}"
+                                            .toUpperCase(),
+                                        style: const TextStyle(
+                                            color: Colors.black),
                                       ),
+                                      const Icon(Icons.close)
                                     ],
-                                  )),
+                                  ),
+                                ],
+                              )),
                               const PopupMenuItem(
                                 value: 1,
                                 child: ListTile(
@@ -339,26 +357,26 @@ class _UserDirectoryDesktopState extends State<UserDirectoryDesktop> {
                               children: [
                                 Icon(Icons.arrow_back_rounded,
                                     size: MediaQuery.of(context).size.width >
-                                        1276.8
+                                            1276.8
                                         ? MediaQuery.of(context).size.width *
-                                        0.01
+                                            0.01
                                         : 13),
                                 const SizedBox(width: 8),
                                 Expanded(
                                     child: MediaQuery.of(context).size.width >
-                                        1276.8
+                                            1276.8
                                         ? Text('Go back',
-                                        maxLines: 1,
-                                        style: TextStyle(
-                                            fontSize: MediaQuery.of(context)
-                                                .size
-                                                .width *
-                                                0.01))
+                                            maxLines: 1,
+                                            style: TextStyle(
+                                                fontSize: MediaQuery.of(context)
+                                                        .size
+                                                        .width *
+                                                    0.01))
                                         : const Text(
-                                      'Go back',
-                                      maxLines: 1,
-                                      style: TextStyle(fontSize: 10),
-                                    )),
+                                            'Go back',
+                                            maxLines: 1,
+                                            style: TextStyle(fontSize: 10),
+                                          )),
                               ],
                             ),
                           ),
@@ -381,18 +399,18 @@ class _UserDirectoryDesktopState extends State<UserDirectoryDesktop> {
                       shrinkWrap: true,
                       children: alphabets
                           .map((alphabet) => InkWell(
-                        onTap: () {
-                          setSearchIndex(alphabet);
-                        },
-                        child: Padding(
-                          padding: const EdgeInsets.all(8.0),
-                          child: Text(
-                            alphabet,
-                            style: GoogleFonts.inriaSerif(
-                                fontSize: 16, color: Colors.white),
-                          ),
-                        ),
-                      ))
+                                onTap: () {
+                                  setSearchIndex(alphabet);
+                                },
+                                child: Padding(
+                                  padding: const EdgeInsets.all(8.0),
+                                  child: Text(
+                                    alphabet,
+                                    style: GoogleFonts.inriaSerif(
+                                        fontSize: 16, color: Colors.white),
+                                  ),
+                                ),
+                              ))
                           .toList(),
                     ),
                   ),
@@ -475,7 +493,8 @@ class _UserDirectoryDesktopState extends State<UserDirectoryDesktop> {
                                 hintStyle: const TextStyle(
                                     color: Colors.white, fontSize: 14),
                                 suffixIcon: Row(
-                                  mainAxisSize: MainAxisSize.min, // Keep it compact
+                                  mainAxisSize: MainAxisSize.min,
+                                  // Keep it compact
                                   children: [
                                     // The Microphone Button
                                     IconButton(
@@ -496,10 +515,12 @@ class _UserDirectoryDesktopState extends State<UserDirectoryDesktop> {
                                               : _stopListening();
                                         } else {
                                           // Optional: Show a snackbar if permissions are denied
-                                          ScaffoldMessenger.of(context).showSnackBar(
-                                              const SnackBar(content: Text('Speech recognition not available or denied.'))
-                                          );
+                                          ScaffoldMessenger.of(context)
+                                              .showSnackBar(const SnackBar(
+                                                  content: Text(
+                                                      'Speech recognition not available or denied.')));
                                         }
+                                        setState(() {});
                                       },
                                     ),
                                     // The existing Search Icon
@@ -534,11 +555,11 @@ class _UserDirectoryDesktopState extends State<UserDirectoryDesktop> {
               Padding(
                 padding: MediaQuery.of(context).size.width > 1300
                     ? EdgeInsets.only(
-                    left: MediaQuery.of(context).size.width * 0.2,
-                    right: MediaQuery.of(context).size.width * 0.2)
+                        left: MediaQuery.of(context).size.width * 0.2,
+                        right: MediaQuery.of(context).size.width * 0.2)
                     : EdgeInsets.only(
-                    left: MediaQuery.of(context).size.width * 0.1,
-                    right: MediaQuery.of(context).size.width * 0.1),
+                        left: MediaQuery.of(context).size.width * 0.1,
+                        right: MediaQuery.of(context).size.width * 0.1),
                 child: ExpansionTile(
                   trailing: Visibility(
                     visible: false,
@@ -551,12 +572,12 @@ class _UserDirectoryDesktopState extends State<UserDirectoryDesktop> {
                       Expanded(
                         child: SizedBox(
                             child: Text(
-                              "Name",
-                              textAlign: TextAlign.center,
-                              style: GoogleFonts.inriaSerif(
-                                  fontSize: 17, color: Colors.white),
-                              maxLines: 1,
-                            )),
+                          "Name",
+                          textAlign: TextAlign.center,
+                          style: GoogleFonts.inriaSerif(
+                              fontSize: 17, color: Colors.white),
+                          maxLines: 1,
+                        )),
                       ),
 
                       // ===================================
@@ -570,13 +591,16 @@ class _UserDirectoryDesktopState extends State<UserDirectoryDesktop> {
                               dropdownColor: const Color(0xff424242),
                               isExpanded: true,
                               value: selectedBranch,
-                              icon: const Icon(Icons.arrow_drop_down, color: Colors.white),
-                              style: GoogleFonts.inriaSerif(fontSize: 17, color: Colors.white),
+                              icon: const Icon(Icons.arrow_drop_down,
+                                  color: Colors.white),
+                              style: GoogleFonts.inriaSerif(
+                                  fontSize: 17, color: Colors.white),
                               items: branchList.map((String value) {
                                 return DropdownMenuItem<String>(
                                   value: value,
                                   child: Center(
-                                    child: Text(value == 'All' ? 'Branch' : value,
+                                    child: Text(
+                                        value == 'All' ? 'Branch' : value,
                                         maxLines: 1,
                                         overflow: TextOverflow.ellipsis),
                                   ),
@@ -604,13 +628,16 @@ class _UserDirectoryDesktopState extends State<UserDirectoryDesktop> {
                               dropdownColor: const Color(0xff424242),
                               isExpanded: true,
                               value: selectedDepartment,
-                              icon: const Icon(Icons.arrow_drop_down, color: Colors.white),
-                              style: GoogleFonts.inriaSerif(fontSize: 16, color: Colors.white),
+                              icon: const Icon(Icons.arrow_drop_down,
+                                  color: Colors.white),
+                              style: GoogleFonts.inriaSerif(
+                                  fontSize: 16, color: Colors.white),
                               items: departmentList.map((String value) {
                                 return DropdownMenuItem<String>(
                                   value: value,
                                   child: Center(
-                                    child: Text(value == 'All' ? 'Department' : value,
+                                    child: Text(
+                                        value == 'All' ? 'Department' : value,
                                         maxLines: 1,
                                         overflow: TextOverflow.ellipsis),
                                   ),
@@ -630,12 +657,12 @@ class _UserDirectoryDesktopState extends State<UserDirectoryDesktop> {
                       Expanded(
                         child: SizedBox(
                             child: Text(
-                              "Extension",
-                              textAlign: TextAlign.center,
-                              style: GoogleFonts.inriaSerif(
-                                  fontSize: 17, color: Colors.white),
-                              maxLines: 1,
-                            )),
+                          "Extension",
+                          textAlign: TextAlign.center,
+                          style: GoogleFonts.inriaSerif(
+                              fontSize: 17, color: Colors.white),
+                          maxLines: 1,
+                        )),
                       ),
 
                       // ===================================
@@ -658,23 +685,20 @@ class _UserDirectoryDesktopState extends State<UserDirectoryDesktop> {
                                 const SizedBox(width: 5),
                                 isRefreshing
                                     ? const SizedBox(
-                                  width: 16,
-                                  height: 16,
-                                  child: CircularProgressIndicator(
-                                    color: Colors.white,
-                                    strokeWidth: 2,
-                                  ),
-                                )
+                                        width: 16,
+                                        height: 16,
+                                        child: CircularProgressIndicator(
+                                          color: Colors.white,
+                                          strokeWidth: 2,
+                                        ),
+                                      )
                                     : InkWell(
-                                  onTap: () {
-                                    refreshStatus();
-                                  },
-                                  child: const Icon(
-                                      Icons.refresh,
-                                      color: Colors.white,
-                                      size: 18
-                                  ),
-                                )
+                                        onTap: () {
+                                          refreshStatus();
+                                        },
+                                        child: const Icon(Icons.refresh,
+                                            color: Colors.white, size: 18),
+                                      )
                               ],
                             ),
                             Text(
@@ -688,7 +712,6 @@ class _UserDirectoryDesktopState extends State<UserDirectoryDesktop> {
                         ),
                       ),
                       // ===================================
-
                     ],
                   ),
                 ),
@@ -696,37 +719,39 @@ class _UserDirectoryDesktopState extends State<UserDirectoryDesktop> {
             ]),
             (directoryFilter.first.data ?? []).isNotEmpty
                 ? Expanded(
-              child: ScrollablePositionedList.builder(
-                  itemScrollController: _itemScrollController,
-                  itemPositionsListener: _itemPositionsListener,
-                  itemCount: (directoryFilter.first.data ?? []).length,
-                  itemBuilder: (context, index) {
+                    child: ScrollablePositionedList.builder(
+                        itemScrollController: _itemScrollController,
+                        itemPositionsListener: _itemPositionsListener,
+                        itemCount: (directoryFilter.first.data ?? []).length,
+                        itemBuilder: (context, index) {
+                          final sortedItems = (directoryFilter.first.data ?? [])
+                            ..sort((a, b) => a.employeename!
+                                .toLowerCase()
+                                .compareTo(b.employeename!.toLowerCase()));
+                          final directoryList = sortedItems[index];
 
-                    final sortedItems = (directoryFilter.first.data ?? [])
-                      ..sort((a, b) => a.employeename!
-                          .toLowerCase()
-                          .compareTo(b.employeename!.toLowerCase()));
-                    final directoryList = sortedItems[index];
-
-                    return Padding(
-                      padding: MediaQuery.of(context).size.width > 1300
-                          ? EdgeInsets.only(
-                          left: MediaQuery.of(context).size.width * .2,
-                          right: MediaQuery.of(context).size.width * .2)
-                          : EdgeInsets.only(
-                          left: MediaQuery.of(context).size.width * .1,
-                          right: MediaQuery.of(context).size.width * .1),
-                      child: Container(
-                          color: index % 2 == 0
-                              ? const Color(0xff5A5858)
-                              : const Color(0xff424242),
-                          child: customListExpanded(
-                              context, directoryList, status)),
-                    );
-                  }),
-            )
-                : const Expanded(
-                child: Text("No Data Found !!")),
+                          return Padding(
+                            padding: MediaQuery.of(context).size.width > 1300
+                                ? EdgeInsets.only(
+                                    left:
+                                        MediaQuery.of(context).size.width * .2,
+                                    right:
+                                        MediaQuery.of(context).size.width * .2)
+                                : EdgeInsets.only(
+                                    left:
+                                        MediaQuery.of(context).size.width * .1,
+                                    right:
+                                        MediaQuery.of(context).size.width * .1),
+                            child: Container(
+                                color: index % 2 == 0
+                                    ? const Color(0xff5A5858)
+                                    : const Color(0xff424242),
+                                child: customListExpanded(
+                                    context, directoryList, status)),
+                          );
+                        }),
+                  )
+                : const Expanded(child: Text("No Data Found !!")),
             Padding(
               padding: const EdgeInsets.only(left: 8.0, right: 8),
               child: SizedBox(
