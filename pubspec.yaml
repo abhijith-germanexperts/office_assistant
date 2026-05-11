@@ -31,6 +31,7 @@ dependencies:
   window_manager: ^0.5.1
   one_context: ^4.1.0
   permission_handler: ^12.0.1
+  speech_to_text: ^7.3.0
 
   # Media & Notifications (Critical Updates for Android 16KB)
   audioplayers: ^6.5.1

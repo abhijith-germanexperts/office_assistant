@@ -357,38 +357,38 @@ Widget customListExpanded(
                               const SizedBox(
                                 height: 15,
                               ),
-                              Row(
-                                children: [
-                                  Expanded(
-                                      child: SizedBox(
-                                          child: Text(
-                                    "Phone:",
-                                    style: GoogleFonts.inriaSerif(
-                                        fontWeight: FontWeight.bold,
-                                        fontSize: 15,
-                                        color: Colors.white),
-                                    // maxLines: 1,
-                                    // minFontSize: 4,
-                                    // group: headgroup,
-                                  ))),
-                                  Expanded(
-                                      flex: 2,
-                                      child: SizedBox(
-                                          child: Text(
-                                        directory.phoneno.toString() ?? "",
-                                        style: GoogleFonts.inriaSerif(
-                                            fontWeight: FontWeight.normal,
-                                            fontSize: 15,
-                                            color: Colors.white),
-                                        // maxLines: 1,
-                                        // minFontSize: 4,
-                                        // group: headgroup,
-                                      )))
-                                ],
-                              ),
-                              const SizedBox(
-                                height: 15,
-                              ),
+                              // Row(
+                              //   children: [
+                              //     Expanded(
+                              //         child: SizedBox(
+                              //             child: Text(
+                              //       "Phone:",
+                              //       style: GoogleFonts.inriaSerif(
+                              //           fontWeight: FontWeight.bold,
+                              //           fontSize: 15,
+                              //           color: Colors.white),
+                              //       // maxLines: 1,
+                              //       // minFontSize: 4,
+                              //       // group: headgroup,
+                              //     ))),
+                              //     Expanded(
+                              //         flex: 2,
+                              //         child: SizedBox(
+                              //             child: Text(
+                              //           directory.phoneno.toString() ?? "",
+                              //           style: GoogleFonts.inriaSerif(
+                              //               fontWeight: FontWeight.normal,
+                              //               fontSize: 15,
+                              //               color: Colors.white),
+                              //           // maxLines: 1,
+                              //           // minFontSize: 4,
+                              //           // group: headgroup,
+                              //         )))
+                              //   ],
+                              // ),
+                              // const SizedBox(
+                              //   height: 15,
+                              // ),
                               Row(
                                 children: [
                                   Expanded(

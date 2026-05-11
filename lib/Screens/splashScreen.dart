@@ -37,7 +37,7 @@ class _SplashScreenState extends State<SplashScreen> {
   initreload() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     AppConstants.username = prefs.getString("Login");
-    AppConstants.roleId = prefs.getString("Id");
+    AppConstants.roleId = prefs.getInt("Id");
   }
 
   inittimer() {

@@ -11,6 +11,7 @@ import 'package:ge_assistant/services/apiservices.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 import 'package:scrollable_positioned_list/scrollable_positioned_list.dart';
+import 'package:speech_to_text/speech_to_text.dart';
 
 import '../../Constants/expandablelisttile.dart';
 import '../../provider/departmant_provider.dart';
@@ -27,7 +28,39 @@ class UserDirectoryDesktop extends StatefulWidget {
 }
 
 class _UserDirectoryDesktopState extends State<UserDirectoryDesktop> {
+
+  // --- NEW VARIABLES FOR SPEECH TO TEXT ---
+  final SpeechToText _speechToText = SpeechToText();
+  bool _speechEnabled = false;
+
+
+  // --- SPEECH TO TEXT METHODS ---
+  void _initSpeech() async {
+    _speechEnabled = await _speechToText.initialize();
+    setState(() {});
+  }
+
+  void _startListening() async {
+    await _speechToText.listen(onResult: _onSpeechResult);
+    setState(() {});
+  }
+
+  void _stopListening() async {
+    await _speechToText.stop();
+    setState(() {});
+  }
+
+  void _onSpeechResult(result) {
+    setState(() {
+      // Put the recognized words into the text box
+      _textEditingController.text = result.recognizedWords;
+      // Trigger the search immediately!
+      applyFilters();
+    });
+  }
+
   IconData _expandedIcon = Icons.keyboard_arrow_down;
+
   String text = "";
   bool isSlted = false;
   ApiProvider client = ApiProvider();
@@ -43,12 +76,14 @@ class _UserDirectoryDesktopState extends State<UserDirectoryDesktop> {
   late List<Record> compareLists = [];
   late Future<Crmuserslogin> status;
 
-
-  // --- NEW VARIABLES FOR DROPDOWNS ---
+  // --- VARIABLES FOR DROPDOWNS ---
   String selectedBranch = 'All';
   String selectedDepartment = 'All';
   List<String> branchList = ['All'];
   List<String> departmentList = ['All'];
+
+  // --- NEW VARIABLE FOR REFRESH TIME ---
+  String lastRefreshTime = "";
 
   TextEditingController _textEditingController = TextEditingController();
   TextEditingController _departmenttextEditingController = TextEditingController();
@@ -82,12 +117,46 @@ class _UserDirectoryDesktopState extends State<UserDirectoryDesktop> {
       directoryFilter.add(DirectoryModel(data: filteredData));
     });
   }
+// --- NEW VARIABLE FOR REFRESH TIME ---
+
+  bool isRefreshing = false; // <--- ADD THIS LINE
+  // --- NEW REFRESH FUNCTION ---
+  // --- UPDATED REFRESH FUNCTION ---
+  void refreshStatus() async {
+    setState(() {
+      isRefreshing = true; // Start the loader
+    });
+
+    // Call the API again
+    status = client.getloginusers(AppConstants.token ?? "");
+
+    // Wait for the data to actually arrive
+    await status;
+
+    setState(() {
+      isRefreshing = false; // Stop the loader
+
+      // Update the timestamp ONLY after successful fetch
+      DateTime now = DateTime.now();
+      int hour = now.hour > 12 ? now.hour - 12 : (now.hour == 0 ? 12 : now.hour);
+      String amPm = now.hour >= 12 ? 'PM' : 'AM';
+      String minute = now.minute.toString().padLeft(2, '0');
+      lastRefreshTime = "$hour:$minute $amPm";
+    });
+  }
 
   @override
   void initState() {
     actualDirectory.addAll(widget.director);
     directoryFilter = List.from(widget.director);
+
+    // Set initial status and time
     status = client.getloginusers(AppConstants.token ?? "");
+    DateTime now = DateTime.now();
+    int hour = now.hour > 12 ? now.hour - 12 : (now.hour == 0 ? 12 : now.hour);
+    String amPm = now.hour >= 12 ? 'PM' : 'AM';
+    String minute = now.minute.toString().padLeft(2, '0');
+    lastRefreshTime = "$hour:$minute $amPm";
 
     // --- POPULATE DROPDOWNS ON LOAD ---
     Set<String> uniqueDepts = {};
@@ -102,6 +171,7 @@ class _UserDirectoryDesktopState extends State<UserDirectoryDesktop> {
         branchList.add(datum.branchName!);
       }
     }
+    _initSpeech(); // <--- ADD THIS LINE
 
     super.initState();
   }
@@ -114,7 +184,6 @@ class _UserDirectoryDesktopState extends State<UserDirectoryDesktop> {
       if (_searchIndex >= 0) _itemScrollController.jumpTo(index: _searchIndex);
     });
   }
-
 
   @override
   Widget build(BuildContext context) {
@@ -405,9 +474,41 @@ class _UserDirectoryDesktopState extends State<UserDirectoryDesktop> {
                                 hintText: "Search by Name",
                                 hintStyle: const TextStyle(
                                     color: Colors.white, fontSize: 14),
-                                suffixIcon: const Icon(
-                                  Icons.search,
-                                  color: Colors.white,
+                                suffixIcon: Row(
+                                  mainAxisSize: MainAxisSize.min, // Keep it compact
+                                  children: [
+                                    // The Microphone Button
+                                    IconButton(
+                                      icon: Icon(
+                                        _speechToText.isListening
+                                            ? Icons.mic
+                                            : Icons.mic_none,
+                                        // Turn red when recording so the user knows
+                                        color: _speechToText.isListening
+                                            ? Colors.red
+                                            : Colors.white,
+                                      ),
+                                      onPressed: () {
+                                        // If speech is available, toggle listening
+                                        if (_speechEnabled) {
+                                          _speechToText.isNotListening
+                                              ? _startListening()
+                                              : _stopListening();
+                                        } else {
+                                          // Optional: Show a snackbar if permissions are denied
+                                          ScaffoldMessenger.of(context).showSnackBar(
+                                              const SnackBar(content: Text('Speech recognition not available or denied.'))
+                                          );
+                                        }
+                                      },
+                                    ),
+                                    // The existing Search Icon
+                                    const Icon(
+                                      Icons.search,
+                                      color: Colors.white,
+                                    ),
+                                    const SizedBox(width: 10), // Padding
+                                  ],
                                 ),
                                 border: OutlineInputBorder(
                                     borderSide: const BorderSide(
@@ -536,17 +637,58 @@ class _UserDirectoryDesktopState extends State<UserDirectoryDesktop> {
                               maxLines: 1,
                             )),
                       ),
+
+                      // ===================================
+                      // UPDATED STATUS HEADER W/ REFRESH
+                      // ===================================
                       Expanded(
-                        child: SizedBox(
-                          child: Text(
-                            "Status",
-                            textAlign: TextAlign.center,
-                            style: GoogleFonts.inriaSerif(
-                                fontSize: 17, color: Colors.white),
-                            maxLines: 1,
-                          ),
+                        child: Column(
+                          mainAxisSize: MainAxisSize.min,
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Text(
+                                  "Status",
+                                  textAlign: TextAlign.center,
+                                  style: GoogleFonts.inriaSerif(
+                                      fontSize: 17, color: Colors.white),
+                                ),
+                                const SizedBox(width: 5),
+                                isRefreshing
+                                    ? const SizedBox(
+                                  width: 16,
+                                  height: 16,
+                                  child: CircularProgressIndicator(
+                                    color: Colors.white,
+                                    strokeWidth: 2,
+                                  ),
+                                )
+                                    : InkWell(
+                                  onTap: () {
+                                    refreshStatus();
+                                  },
+                                  child: const Icon(
+                                      Icons.refresh,
+                                      color: Colors.white,
+                                      size: 18
+                                  ),
+                                )
+                              ],
+                            ),
+                            Text(
+                              "($lastRefreshTime)",
+                              style: GoogleFonts.inriaSerif(
+                                  fontSize: 11, color: Colors.white70),
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                          ],
                         ),
                       ),
+                      // ===================================
+
                     ],
                   ),
                 ),
@@ -569,15 +711,11 @@ class _UserDirectoryDesktopState extends State<UserDirectoryDesktop> {
                     return Padding(
                       padding: MediaQuery.of(context).size.width > 1300
                           ? EdgeInsets.only(
-                          left:
-                          MediaQuery.of(context).size.width * .2,
-                          right:
-                          MediaQuery.of(context).size.width * .2)
+                          left: MediaQuery.of(context).size.width * .2,
+                          right: MediaQuery.of(context).size.width * .2)
                           : EdgeInsets.only(
-                          left:
-                          MediaQuery.of(context).size.width * .1,
-                          right:
-                          MediaQuery.of(context).size.width * .1),
+                          left: MediaQuery.of(context).size.width * .1,
+                          right: MediaQuery.of(context).size.width * .1),
                       child: Container(
                           color: index % 2 == 0
                               ? const Color(0xff5A5858)
@@ -611,6 +749,7 @@ class _UserDirectoryDesktopState extends State<UserDirectoryDesktop> {
         ));
   }
 }
+//the above code work fine for drop down selection department and branch
 // import 'dart:ffi';
 //
 // import 'package:auto_size_text/auto_size_text.dart';
@@ -646,10 +785,10 @@ class _UserDirectoryDesktopState extends State<UserDirectoryDesktop> {
 //   ApiProvider client = ApiProvider();
 //   int _searchIndex = 0;
 //   final alphabets =
-//       List.generate(26, (index) => String.fromCharCode(index + 65));
+//   List.generate(26, (index) => String.fromCharCode(index + 65));
 //   final ItemScrollController _itemScrollController = ItemScrollController();
 //   final ItemPositionsListener _itemPositionsListener =
-//       ItemPositionsListener.create();
+//   ItemPositionsListener.create();
 //   List<Datum> check = [];
 //   late List<DirectoryModel> directoryFilter = [];
 //   late List<DirectoryModel> actualDirectory = [];
@@ -657,13 +796,16 @@ class _UserDirectoryDesktopState extends State<UserDirectoryDesktop> {
 //   late Future<Crmuserslogin> status;
 //
 //
-//   // --- ADD THESE VARIABLES ---
+//   // --- NEW VARIABLES FOR DROPDOWNS ---
 //   String selectedBranch = 'All';
 //   String selectedDepartment = 'All';
 //   List<String> branchList = ['All'];
 //   List<String> departmentList = ['All'];
 //
-//   // --- ADD THIS FILTER FUNCTION ---
+//   TextEditingController _textEditingController = TextEditingController();
+//   TextEditingController _departmenttextEditingController = TextEditingController();
+//
+//   // --- UNIFIED FILTER FUNCTION ---
 //   void applyFilters() {
 //     List<Datum> allData = actualDirectory.first.data ?? [];
 //
@@ -680,7 +822,11 @@ class _UserDirectoryDesktopState extends State<UserDirectoryDesktop> {
 //       bool matchesDepartment = selectedDepartment == 'All' ||
 //           (element.departmentname ?? "") == selectedDepartment;
 //
-//       return matchesName && matchesBranch && matchesDepartment;
+//       // 4. Check Top Department Search box (if still used)
+//       bool matchesTopDeptSearch = _departmenttextEditingController.text.isEmpty ||
+//           (element.departmentname ?? "").toLowerCase().contains(_departmenttextEditingController.text.toLowerCase());
+//
+//       return matchesName && matchesBranch && matchesDepartment && matchesTopDeptSearch;
 //     }).toList();
 //
 //     setState(() {
@@ -695,7 +841,7 @@ class _UserDirectoryDesktopState extends State<UserDirectoryDesktop> {
 //     directoryFilter = List.from(widget.director);
 //     status = client.getloginusers(AppConstants.token ?? "");
 //
-//     // --- ADD THIS TO POPULATE DROPDOWNS ---
+//     // --- POPULATE DROPDOWNS ON LOAD ---
 //     Set<String> uniqueDepts = {};
 //     Set<String> uniqueBranches = {};
 //     for (var datum in actualDirectory.first.data ?? []) {
@@ -708,7 +854,6 @@ class _UserDirectoryDesktopState extends State<UserDirectoryDesktop> {
 //         branchList.add(datum.branchName!);
 //       }
 //     }
-//     // --------------------------------------
 //
 //     super.initState();
 //   }
@@ -722,94 +867,28 @@ class _UserDirectoryDesktopState extends State<UserDirectoryDesktop> {
 //     });
 //   }
 //
-//   List<String> unFildepartments = [];
-//   // = 'PARTS DEPARTMENT'; // Initialize with a default item if needed
-//   TextEditingController _textEditingController = TextEditingController();
-//   TextEditingController _departmenttextEditingController =
-//       TextEditingController();
 //
 //   @override
 //   Widget build(BuildContext context) {
 //     final stringProvider = Provider.of<StringProvider>(context);
 //     String selectedItem = stringProvider.stringValue;
-//     unFildepartments.clear();
-//     // List<String> dropdownItems = ['PROJECT', 'ACCOUNTS', 'Item 3', 'Item 4'];
-//     // var listgroup = AutoSizeGroup();
+//
 //     var headinggroup = AutoSizeGroup();
 //     double height = MediaQuery.of(context).size.height;
 //     double width = MediaQuery.of(context).size.width;
-//     List<Datum> modeltemp = actualDirectory.first.data ?? [];
-//     List<Datum> listOfContactbyDepartment = [];
-//     Set<String> uniqueDepartments = {};
-//     unFildepartments.insert(0, "All Departments");
-//     for (int i = 0; i < actualDirectory.first.data!.length; i++) {
-//       // unFildepartments.add(actualDirectory.first.data?[i].departmentname);
-//       String? departmentName = actualDirectory.first.data?[i].departmentname;
 //
-//       if (!uniqueDepartments.contains(departmentName)) {
-//         unFildepartments.add(departmentName!);
-//         uniqueDepartments.add(departmentName!);
-//       }
-//     }
-//
-//     print("length actual ${actualDirectory.first.data?.length}");
-//     print(unFildepartments);
 //     return Scaffold(
 //         backgroundColor: const Color(0xff303030),
-//         // backgroundColor: Colors.white,
-//         // appBar: AppBar(
-//         //   title: Text('image/end user directory banner.jpg'),
-//         // ),
 //         body: Column(
 //           children: [
-//             // FutureBuilder(
-//             //     future: client.getloginusers(),
-//             //     builder: (context, snapshot) {
-//             //       if (snapshot.hasData) {
-//             //         if (snapshot.connectionState == ConnectionState.waiting) {
-//             //           print("Loading......");
-//             //         }
-//             //         if (snapshot.connectionState == ConnectionState.done) {
-//             //           print(snapshot.data?.count.toString());
-//             //           return SizedBox(
-//             //             height: 0,
-//             //             child: ListView.builder(
-//             //                 itemCount: directoryFilter.length,
-//             //                 itemBuilder: (context, index) {
-//             //                   //print(snapshot.data?.records?[index].sLoginName)
-//             // List<String> comparisonResults = actualDirectory
-//             //     .first.data!
-//             //     .map((object1) =>
-//             //         (snapshot.data?.records ?? []).any(
-//             //                 (element) =>
-//             //                     object1.crmusercode ==
-//             //                     element.sLoginName)
-//             //             ? 'x'
-//             //             : '0')
-//             //     .toList();
-//
-//             //                   print('Comparison results: $comparisonResults');
-//             //                 }),
-//             //           );
-//             //         }
-//             //         return SizedBox();
-//             //       } else if (snapshot.hasError) {
-//             //         return const Center(
-//             //           child: Text('Error'),
-//             //         );
-//             //       } else {
-//             //         const SizedBox.shrink();
-//             //       }
-//             //       return const SizedBox.shrink();
-//             //     }),
 //             Container(
 //                 width: double.maxFinite,
 //                 height: MediaQuery.of(context).size.height * 0.25,
 //                 decoration: const BoxDecoration(
 //                     image: DecorationImage(
-//                   image: AssetImage("image/end user directory banner.jpg"),
-//                   fit: BoxFit.fill,
-//                 )),
+//                       image: AssetImage("image/end user directory banner.jpg"),
+//                       fit: BoxFit.fill,
+//                     )),
 //                 child: Column(
 //                   children: [
 //                     Row(
@@ -818,7 +897,6 @@ class _UserDirectoryDesktopState extends State<UserDirectoryDesktop> {
 //                         SizedBox(
 //                             width: MediaQuery.of(context).size.width * 0.4,
 //                             height: MediaQuery.of(context).size.height * 0.1,
-//                             // color: Colors.red,
 //                             child: const Image(
 //                                 image: AssetImage(
 //                                     "image/GE office assistant white.png"))),
@@ -829,30 +907,22 @@ class _UserDirectoryDesktopState extends State<UserDirectoryDesktop> {
 //                             menuList: [
 //                               PopupMenuItem(
 //                                   child: Column(
-//                                 children: [
-//                                   Row(
-//                                     mainAxisAlignment:
-//                                         MainAxisAlignment.spaceBetween,
 //                                     children: [
-//                                       Text(
-//                                         "Hello ${AppConstants.name}"
-//                                             .toUpperCase(),
-//                                         style: const TextStyle(
-//                                             color: Colors.black),
+//                                       Row(
+//                                         mainAxisAlignment:
+//                                         MainAxisAlignment.spaceBetween,
+//                                         children: [
+//                                           Text(
+//                                             "Hello ${AppConstants.name}"
+//                                                 .toUpperCase(),
+//                                             style: const TextStyle(
+//                                                 color: Colors.black),
+//                                           ),
+//                                           const Icon(Icons.close)
+//                                         ],
 //                                       ),
-//                                       const Icon(Icons.close)
 //                                     ],
-//                                   ),
-//                                   // Row(
-//                                   //   children: [
-//                                   //     Text(
-//                                   //       AppConstants.username.toString(),
-//                                   //       style: TextStyle(color: Colors.black),
-//                                   //     ),
-//                                   //   ],
-//                                   // )
-//                                 ],
-//                               )),
+//                                   )),
 //                               const PopupMenuItem(
 //                                 value: 1,
 //                                 child: ListTile(
@@ -875,7 +945,6 @@ class _UserDirectoryDesktopState extends State<UserDirectoryDesktop> {
 //                     SizedBox(
 //                       width: MediaQuery.of(context).size.width,
 //                       height: MediaQuery.of(context).size.height * .15,
-//                       // color: Colors.blue,
 //                       child: Column(
 //                         mainAxisAlignment: MainAxisAlignment.center,
 //                         children: [
@@ -941,10 +1010,8 @@ class _UserDirectoryDesktopState extends State<UserDirectoryDesktop> {
 //                             style: ElevatedButton.styleFrom(
 //                               elevation: 4,
 //                               backgroundColor: const Color(0xff303030),
-//                               // foregroundColor: Colors.white,
 //                               shape: RoundedRectangleBorder(
-//                                 borderRadius: BorderRadius.circular(
-//                                     17), // Set border radius of 3
+//                                 borderRadius: BorderRadius.circular(17),
 //                                 side: const BorderSide(
 //                                   color: Colors.white,
 //                                 ),
@@ -955,26 +1022,26 @@ class _UserDirectoryDesktopState extends State<UserDirectoryDesktop> {
 //                               children: [
 //                                 Icon(Icons.arrow_back_rounded,
 //                                     size: MediaQuery.of(context).size.width >
-//                                             1276.8
+//                                         1276.8
 //                                         ? MediaQuery.of(context).size.width *
-//                                             0.01
+//                                         0.01
 //                                         : 13),
 //                                 const SizedBox(width: 8),
 //                                 Expanded(
 //                                     child: MediaQuery.of(context).size.width >
-//                                             1276.8
+//                                         1276.8
 //                                         ? Text('Go back',
-//                                             maxLines: 1,
-//                                             style: TextStyle(
-//                                                 fontSize: MediaQuery.of(context)
-//                                                         .size
-//                                                         .width *
-//                                                     0.01))
+//                                         maxLines: 1,
+//                                         style: TextStyle(
+//                                             fontSize: MediaQuery.of(context)
+//                                                 .size
+//                                                 .width *
+//                                                 0.01))
 //                                         : const Text(
-//                                             'Go back',
-//                                             maxLines: 1,
-//                                             style: TextStyle(fontSize: 10),
-//                                           )),
+//                                       'Go back',
+//                                       maxLines: 1,
+//                                       style: TextStyle(fontSize: 10),
+//                                     )),
 //                               ],
 //                             ),
 //                           ),
@@ -987,10 +1054,7 @@ class _UserDirectoryDesktopState extends State<UserDirectoryDesktop> {
 //               Row(
 //                 mainAxisAlignment: MainAxisAlignment.center,
 //                 children: [
-//                   //  SizedBox(width: 15,),
 //                   Container(
-//                     // color: Colors.red,
-//                     // width: double.infinity,
 //                     width: 800,
 //                     height: 50,
 //                     alignment: Alignment.center,
@@ -1000,33 +1064,24 @@ class _UserDirectoryDesktopState extends State<UserDirectoryDesktop> {
 //                       shrinkWrap: true,
 //                       children: alphabets
 //                           .map((alphabet) => InkWell(
-//                                 onTap: () {
-//                                   setSearchIndex(alphabet);
-//                                 },
-//                                 child: Padding(
-//                                   padding: const EdgeInsets.all(8.0),
-//                                   child: Text(
-//                                     alphabet,
-//                                     style: GoogleFonts.inriaSerif(
-//                                         fontSize: 16, color: Colors.white),
-//                                     // maxLines: 1,
-//                                     // group: listgroup,
-//                                   ),
-//
-//                                   //  Text(
-//                                   //   alphabet,
-//                                   //   style: const TextStyle(
-//                                   //       fontSize: 16),
-//                                   // ),
-//                                 ),
-//                               ))
+//                         onTap: () {
+//                           setSearchIndex(alphabet);
+//                         },
+//                         child: Padding(
+//                           padding: const EdgeInsets.all(8.0),
+//                           child: Text(
+//                             alphabet,
+//                             style: GoogleFonts.inriaSerif(
+//                                 fontSize: 16, color: Colors.white),
+//                           ),
+//                         ),
+//                       ))
 //                           .toList(),
 //                     ),
 //                   ),
 //                 ],
 //               ),
 //               Container(
-//                 // color: Colors.yellow,
 //                 width: 800,
 //                 height: 50,
 //                 child: Row(
@@ -1035,48 +1090,24 @@ class _UserDirectoryDesktopState extends State<UserDirectoryDesktop> {
 //                     Container(
 //                       height: 60,
 //                       decoration: BoxDecoration(
-//                           // color: Colors.red,
 //                           borderRadius: BorderRadiusDirectional.circular(50),
 //                           border: Border.all(color: Colors.white)),
 //                       child: Row(
 //                         children: [
 //                           Container(
 //                             child: SizedBox(
-//                               //  width:MediaQuery.of(context).size.width > 900? MediaQuery.of(context).size.width * 0.2 : MediaQuery.of(context).size.width * 0.3,
 //                               width: 340,
-//                               // height: MediaQuery.of(context).size.height * 0.08,
 //                               child: TextFormField(
 //                                 controller: _departmenttextEditingController,
 //                                 textAlign: TextAlign.center,
 //                                 style: const TextStyle(color: Colors.white),
 //                                 onChanged: (value) {
-//                                   List<Datum> dummy = modeltemp
-//                                       .where((Datum element) => (_departmenttextEditingController
-//                                               .text.isNotEmpty
-//                                           ? (element.employeename ?? "")
-//                                                   .toLowerCase()
-//                                                   .contains(_textEditingController.text
-//                                                       .toLowerCase()) &&
-//                                               (element.departmentname ?? "")
-//                                                   .toLowerCase()
-//                                                   .contains(_departmenttextEditingController.text
-//                                                       .toLowerCase())
-//                                           : (element.employeename ?? "")
-//                                               .toLowerCase()
-//                                               .contains(_textEditingController.text.toLowerCase())))
-//                                       .toList();
-//
-//                                   setState(() {
-//                                     directoryFilter.clear();
-//                                     directoryFilter
-//                                         .addAll([DirectoryModel(data: dummy)]);
-//                                   });
+//                                   applyFilters(); // Unified filter call
 //                                 },
 //                                 decoration: InputDecoration(
 //                                   hintText: "Search  Department",
 //                                   hintStyle: const TextStyle(
 //                                       color: Colors.white, fontSize: 14),
-//                                   // contentPadding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 12.0),
 //                                   suffixIcon: const Stack(
 //                                     alignment: Alignment.center,
 //                                     children: [
@@ -1084,7 +1115,7 @@ class _UserDirectoryDesktopState extends State<UserDirectoryDesktop> {
 //                                         Icons.search,
 //                                         color: Colors.white,
 //                                         size: 0,
-//                                       ), // First widget
+//                                       ),
 //                                     ],
 //                                   ),
 //                                   border: OutlineInputBorder(
@@ -1100,7 +1131,6 @@ class _UserDirectoryDesktopState extends State<UserDirectoryDesktop> {
 //                                           color: Colors.transparent),
 //                                       borderRadius: BorderRadius.circular(50)),
 //                                 ),
-//                                 //onChanged: searchcontact(),
 //                               ),
 //                             ),
 //                           ),
@@ -1108,58 +1138,29 @@ class _UserDirectoryDesktopState extends State<UserDirectoryDesktop> {
 //                             width: 10,
 //                           ),
 //                           SizedBox(
-//                             // height: MediaQuery.of(context).size.height * 0.1,
 //                             height: 60,
 //                             width: 2,
 //                             child: Container(
 //                               color: Colors.white,
 //                             ),
 //                           ),
-//
-//                           // =============================================DROPDOWNUNDERLINED    sTART =======================
-//
 //                           SizedBox(
-//                             // width:MediaQuery.of(context).size.width > 900? MediaQuery.of(context).size.width * 0.2 : MediaQuery.of(context).size.width * 0.3,
 //                             width: 325,
-//                             // height: MediaQuery.of(context).size.height * 0.08,
 //                             child: TextFormField(
 //                               controller: _textEditingController,
 //                               textAlign: TextAlign.center,
 //                               style: const TextStyle(color: Colors.white),
 //                               onChanged: (value) {
-//                                 List<Datum> dummy = modeltemp
-//                                     .where((Datum element) => (_textEditingController
-//                                             .text.isNotEmpty
-//                                         ? (element.employeename ?? "")
-//                                                 .toLowerCase()
-//                                                 .contains(_textEditingController.text
-//                                                     .toLowerCase()) &&
-//                                             (element.departmentname ?? "")
-//                                                 .toLowerCase()
-//                                                 .contains(_departmenttextEditingController.text
-//                                                     .toLowerCase())
-//                                         : (element.departmentname ?? "")
-//                                             .toLowerCase()
-//                                             .contains(_departmenttextEditingController.text.toLowerCase())))
-//                                     .toList();
-//
-//                                 setState(() {
-//                                   directoryFilter.clear();
-//                                   directoryFilter
-//                                       .addAll([DirectoryModel(data: dummy)]);
-//                                 });
+//                                 applyFilters(); // Unified filter call
 //                               },
 //                               decoration: InputDecoration(
 //                                 hintText: "Search by Name",
 //                                 hintStyle: const TextStyle(
 //                                     color: Colors.white, fontSize: 14),
-//                                 // contentPadding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 12.0),
-//
 //                                 suffixIcon: const Icon(
 //                                   Icons.search,
 //                                   color: Colors.white,
 //                                 ),
-//
 //                                 border: OutlineInputBorder(
 //                                     borderSide: const BorderSide(
 //                                         color: Colors.transparent),
@@ -1173,33 +1174,22 @@ class _UserDirectoryDesktopState extends State<UserDirectoryDesktop> {
 //                                         color: Colors.transparent),
 //                                     borderRadius: BorderRadius.circular(50)),
 //                               ),
-//                               //onChanged: searchcontact(),
 //                             ),
 //                           ),
-//                           // SizedBox(
-//                           //   height: 60,
-//                           //   // MediaQuery.of(context).size.height *
-//                           //   // 0.15,
-//                           //   width: 2,
-//                           //   child: Container(
-//                           //     color: Colors.white,
-//                           //   ),
-//                           // ),
 //                         ],
 //                       ),
 //                     ),
 //                   ],
 //                 ),
 //               ),
-//               // Text(MediaQuery.of(context).size.width.toString()),
 //               Padding(
 //                 padding: MediaQuery.of(context).size.width > 1300
 //                     ? EdgeInsets.only(
-//                         left: MediaQuery.of(context).size.width * 0.2,
-//                         right: MediaQuery.of(context).size.width * 0.2)
+//                     left: MediaQuery.of(context).size.width * 0.2,
+//                     right: MediaQuery.of(context).size.width * 0.2)
 //                     : EdgeInsets.only(
-//                         left: MediaQuery.of(context).size.width * 0.1,
-//                         right: MediaQuery.of(context).size.width * 0.1),
+//                     left: MediaQuery.of(context).size.width * 0.1,
+//                     right: MediaQuery.of(context).size.width * 0.1),
 //                 child: ExpansionTile(
 //                   trailing: Visibility(
 //                     visible: false,
@@ -1212,46 +1202,91 @@ class _UserDirectoryDesktopState extends State<UserDirectoryDesktop> {
 //                       Expanded(
 //                         child: SizedBox(
 //                             child: Text(
-//                           "Name",
-//                           textAlign: TextAlign.center,
-//                           style: GoogleFonts.inriaSerif(
-//                               fontSize: 17, color: Colors.white),
-//                           maxLines: 1,
-//                           // group: listgroup,
-//                         )),
+//                               "Name",
+//                               textAlign: TextAlign.center,
+//                               style: GoogleFonts.inriaSerif(
+//                                   fontSize: 17, color: Colors.white),
+//                               maxLines: 1,
+//                             )),
 //                       ),
+//
+//                       // ===================================
+//                       // NEW BRANCH DROPDOWN
+//                       // ===================================
+//                       Expanded(
+//                         child: Container(
+//                           alignment: Alignment.center,
+//                           child: DropdownButtonHideUnderline(
+//                             child: DropdownButton<String>(
+//                               dropdownColor: const Color(0xff424242),
+//                               isExpanded: true,
+//                               value: selectedBranch,
+//                               icon: const Icon(Icons.arrow_drop_down, color: Colors.white),
+//                               style: GoogleFonts.inriaSerif(fontSize: 17, color: Colors.white),
+//                               items: branchList.map((String value) {
+//                                 return DropdownMenuItem<String>(
+//                                   value: value,
+//                                   child: Center(
+//                                     child: Text(value == 'All' ? 'Branch' : value,
+//                                         maxLines: 1,
+//                                         overflow: TextOverflow.ellipsis),
+//                                   ),
+//                                 );
+//                               }).toList(),
+//                               onChanged: (newValue) {
+//                                 setState(() {
+//                                   selectedBranch = newValue!;
+//                                 });
+//                                 applyFilters();
+//                               },
+//                             ),
+//                           ),
+//                         ),
+//                       ),
+//
+//                       // ===================================
+//                       // NEW DEPARTMENT DROPDOWN
+//                       // ===================================
+//                       Expanded(
+//                         child: Container(
+//                           alignment: Alignment.center,
+//                           child: DropdownButtonHideUnderline(
+//                             child: DropdownButton<String>(
+//                               dropdownColor: const Color(0xff424242),
+//                               isExpanded: true,
+//                               value: selectedDepartment,
+//                               icon: const Icon(Icons.arrow_drop_down, color: Colors.white),
+//                               style: GoogleFonts.inriaSerif(fontSize: 16, color: Colors.white),
+//                               items: departmentList.map((String value) {
+//                                 return DropdownMenuItem<String>(
+//                                   value: value,
+//                                   child: Center(
+//                                     child: Text(value == 'All' ? 'Department' : value,
+//                                         maxLines: 1,
+//                                         overflow: TextOverflow.ellipsis),
+//                                   ),
+//                                 );
+//                               }).toList(),
+//                               onChanged: (newValue) {
+//                                 setState(() {
+//                                   selectedDepartment = newValue!;
+//                                 });
+//                                 applyFilters();
+//                               },
+//                             ),
+//                           ),
+//                         ),
+//                       ),
+//
 //                       Expanded(
 //                         child: SizedBox(
 //                             child: Text(
-//                           "Branch",
-//                           textAlign: TextAlign.center,
-//                           style: GoogleFonts.inriaSerif(
-//                               fontSize: 17, color: Colors.white),
-//                           maxLines: 1,
-//                           // group: listgroup,
-//                         )),
-//                       ),
-//                       Expanded(
-//                         child: SizedBox(
-//                             child: Text(
-//                           "Department",
-//                           textAlign: TextAlign.center,
-//                           style: GoogleFonts.inriaSerif(
-//                               fontSize: 16, color: Colors.white),
-//                           maxLines: 1,
-//                           // group: listgroup,
-//                         )),
-//                       ),
-//                       Expanded(
-//                         child: SizedBox(
-//                             child: Text(
-//                           "Extension",
-//                           textAlign: TextAlign.center,
-//                           style: GoogleFonts.inriaSerif(
-//                               fontSize: 17, color: Colors.white),
-//                           maxLines: 1,
-//                           // group: listgroup,
-//                         )),
+//                               "Extension",
+//                               textAlign: TextAlign.center,
+//                               style: GoogleFonts.inriaSerif(
+//                                   fontSize: 17, color: Colors.white),
+//                               maxLines: 1,
+//                             )),
 //                       ),
 //                       Expanded(
 //                         child: SizedBox(
@@ -1261,7 +1296,6 @@ class _UserDirectoryDesktopState extends State<UserDirectoryDesktop> {
 //                             style: GoogleFonts.inriaSerif(
 //                                 fontSize: 17, color: Colors.white),
 //                             maxLines: 1,
-//                             // group: listgroup,
 //                           ),
 //                         ),
 //                       ),
@@ -1272,43 +1306,41 @@ class _UserDirectoryDesktopState extends State<UserDirectoryDesktop> {
 //             ]),
 //             (directoryFilter.first.data ?? []).isNotEmpty
 //                 ? Expanded(
-//                     child: ScrollablePositionedList.builder(
-//                         itemScrollController: _itemScrollController,
-//                         itemPositionsListener: _itemPositionsListener,
-//                         itemCount: (directoryFilter.first.data ?? []).length,
-//                         itemBuilder: (context, index) {
-//                           //myList..sort((a, b) => a.name.toLowerCase().compareTo(b.name.toLowerCase()));
+//               child: ScrollablePositionedList.builder(
+//                   itemScrollController: _itemScrollController,
+//                   itemPositionsListener: _itemPositionsListener,
+//                   itemCount: (directoryFilter.first.data ?? []).length,
+//                   itemBuilder: (context, index) {
 //
-//                           final sortedItems = (directoryFilter.first.data ?? [])
-//                             ..sort((a, b) => a.employeename!
-//                                 .toLowerCase()
-//                                 .compareTo(b.employeename!.toLowerCase()));
-//                           final directoryList = sortedItems[index];
-//                           //
-//                           return Padding(
-//                             padding: MediaQuery.of(context).size.width > 1300
-//                                 ? EdgeInsets.only(
-//                                     left:
-//                                         MediaQuery.of(context).size.width * .2,
-//                                     right:
-//                                         MediaQuery.of(context).size.width * .2)
-//                                 : EdgeInsets.only(
-//                                     left:
-//                                         MediaQuery.of(context).size.width * .1,
-//                                     right:
-//                                         MediaQuery.of(context).size.width * .1),
-//                             child: Container(
-//                                 color: index % 2 == 0
-//                                     ? const Color(0xff5A5858)
-//                                     : const Color(0xff424242),
-//                                 child: customListExpanded(
-//                                     context, directoryList, status)),
-//                           );
-//                         }),
-//                   )
+//                     final sortedItems = (directoryFilter.first.data ?? [])
+//                       ..sort((a, b) => a.employeename!
+//                           .toLowerCase()
+//                           .compareTo(b.employeename!.toLowerCase()));
+//                     final directoryList = sortedItems[index];
+//
+//                     return Padding(
+//                       padding: MediaQuery.of(context).size.width > 1300
+//                           ? EdgeInsets.only(
+//                           left:
+//                           MediaQuery.of(context).size.width * .2,
+//                           right:
+//                           MediaQuery.of(context).size.width * .2)
+//                           : EdgeInsets.only(
+//                           left:
+//                           MediaQuery.of(context).size.width * .1,
+//                           right:
+//                           MediaQuery.of(context).size.width * .1),
+//                       child: Container(
+//                           color: index % 2 == 0
+//                               ? const Color(0xff5A5858)
+//                               : const Color(0xff424242),
+//                           child: customListExpanded(
+//                               context, directoryList, status)),
+//                     );
+//                   }),
+//             )
 //                 : const Expanded(
-//                     child: Text("No Data Found !!"
-//                         "")),
+//                 child: Text("No Data Found !!")),
 //             Padding(
 //               padding: const EdgeInsets.only(left: 8.0, right: 8),
 //               child: SizedBox(
@@ -1330,22 +1362,5 @@ class _UserDirectoryDesktopState extends State<UserDirectoryDesktop> {
 //           ],
 //         ));
 //   }
-//
-//   // setSearchIndex(String searchLetter, Datum names) {
-//   //   print(names);
-//   //   setState(() {
-//   //     _searchIndex = check.indexWhere((element) => element[0] == searchLetter);
-//   //     if (_searchIndex >= 0) {
-//   //       _itemScrollController.jumpTo(index: _searchIndex);
-//   //     }
-//   //   });
-//   // }
 // }
 //
-// // searchcontact(String query, List<Datum> datums) {
-// //   final suggestions = datums.where((element) {
-// //     final contactname = element.employeename?.toLowerCase();
-// //     final input = query.toLowerCase();
-// //     return contactname!.contains(input);
-// //   }).toList();
-// // }
