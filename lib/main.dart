@@ -29,18 +29,43 @@ Future<void> main() async {
   AppConstants.userPantryId = prefs.getInt("userpanrtyId");
   //print(AppConstants.username);
   WidgetsFlutterBinding.ensureInitialized();
+  // if (Platform.isWindows) {
+  //   await windowManager.ensureInitialized();
+  //   WindowManager.instance.setMinimumSize(const Size(853, 700));
+  //   // WindowManager.instance.setMaximumSize(const Size(1200, 600));
+  // } else if (Platform.isAndroid) {
+  //   await Firebase.initializeApp();
+  //   await FirebaseAPI().iniNotification();
+  // }
+  //
+  // audioPlayer = AudioPlayer(
+  //   playerId: 'my_unique_playerId',
+  // );
+  // runApp(const BasePage());
   if (Platform.isWindows) {
     await windowManager.ensureInitialized();
     WindowManager.instance.setMinimumSize(const Size(853, 700));
     // WindowManager.instance.setMaximumSize(const Size(1200, 600));
   } else if (Platform.isAndroid) {
-    await Firebase.initializeApp();
-    await FirebaseAPI().iniNotification();
+
+    // Wrap the Firebase initialization in a try-catch block
+    try {
+      // Add a small timeout to prevent the app from hanging on the splash screen
+      await Firebase.initializeApp().timeout(const Duration(seconds: 3));
+
+      // This is the line causing the crash on Huawei. If it fails, the catch block will handle it.
+      await FirebaseAPI().iniNotification();
+    } catch (e) {
+      // The app will log the error on Huawei devices but will continue running!
+      debugPrint("Firebase init or Notification failed (likely Huawei device): $e");
+    }
+
   }
 
   audioPlayer = AudioPlayer(
     playerId: 'my_unique_playerId',
   );
+
   runApp(const BasePage());
 }
 

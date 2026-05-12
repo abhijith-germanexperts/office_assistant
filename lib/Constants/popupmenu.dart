@@ -12,6 +12,7 @@ import '../Screens/PantryUser/PantryUser_Completed_Order/basepage_CompletedOrder
 class PopUpMen extends StatelessWidget {
   final List<PopupMenuEntry> menuList;
   final Widget? icon;
+
   const PopUpMen({Key? key, required this.menuList, this.icon})
       : super(key: key);
 
@@ -45,40 +46,99 @@ class PopUpMen extends StatelessWidget {
 _showDialog(BuildContext context) {
   showDialog(
     context: context,
+    barrierDismissible: false,
     builder: (BuildContext context) {
-      return AlertDialog(
-        title: const Text(
-          "Logout",
-          style: TextStyle(color: Colors.black),
-        ),
-        content: const Text(
-          "You Want to Logout!",
-          style: TextStyle(color: Colors.black),
-        ),
-        actions: [
-          MaterialButton(
-            child: const Text("Yes"),
-            onPressed: () async {
-              Utils.logout(int.parse(AppConstants.username));
-              if (Platform.isWindows) {
-                Navigator.of(context).pushAndRemoveUntil(
-                    MaterialPageRoute(
-                        builder: (context) => const SplashScreen()),
-                    (Route<dynamic> route) => false);
-              } else {
-                Navigator.popUntil(context, (route) => route.isFirst);
-              }
-
-              //Restart.restartApp();
-              SharedPreferences preferences =
-                  await SharedPreferences.getInstance();
-              await preferences.clear();
-
-              //Navigator.of(context).pop();
-            },
+      bool isProcessing = false;
+      return StatefulBuilder(builder: (context, setState) {
+        return AlertDialog(
+          title: const Text(
+            "Logout",
+            style: TextStyle(color: Colors.black),
           ),
-        ],
-      );
+          content: const Text(
+            "You Want to Logout!",
+            style: TextStyle(color: Colors.black),
+          ),
+          actions: [
+            MaterialButton(
+              child: isProcessing
+                  ? const SizedBox(
+                width: 20,
+                height: 20,
+                child: CircularProgressIndicator(strokeWidth: 2),
+              )
+                  : const Text("Yes"),
+              onPressed: isProcessing
+                  ? null
+                  : () async {
+                setState(() => isProcessing = true);
+                try {
+                  await Utils.logout(int.parse(AppConstants.username));
+                  SharedPreferences preferences =
+                  await SharedPreferences.getInstance();
+                  await preferences.clear();
+
+                  Navigator.of(context).pushAndRemoveUntil(
+                      MaterialPageRoute(
+                          builder: (context) => const SplashScreen()),
+                          (Route<dynamic> route) => false);
+                } catch (_) {
+                  setState(() => isProcessing = false);
+                }
+              },
+            ),
+            TextButton(
+              onPressed: isProcessing ? null : () => Navigator.of(context).pop(),
+              child: const Text("Cancel"),
+            ),
+          ],
+        );
+      });
     },
   );
 }
+
+// _showDialog(BuildContext context) {
+//   showDialog(
+//     context: context,
+//     builder: (BuildContext context) {
+//       return AlertDialog(
+//         title: const Text(
+//           "Logout",
+//           style: TextStyle(color: Colors.black),
+//         ),
+//         content: const Text(
+//           "You Want to Logout!",
+//           style: TextStyle(color: Colors.black),
+//         ),
+//         actions: [
+//           MaterialButton(
+//             child: const Text("Yes"),
+//             onPressed: () async {
+//               await Utils.logout(int.parse(AppConstants.username));
+//               if (Platform.isWindows) {
+//                 Navigator.of(context).pushAndRemoveUntil(
+//                     MaterialPageRoute(
+//                         builder: (context) => const SplashScreen()),
+//                     (Route<dynamic> route) => false);
+//               } else {
+//                 // Navigator.popUntil(context, (route) => route.isFirst);
+//                 Navigator.of(context).pushAndRemoveUntil(
+//                     MaterialPageRoute(
+//                         builder: (context) => const SplashScreen()),
+//                     (Route<dynamic> route) => false);
+//               }
+//
+//               //Restart.restartApp();
+//               SharedPreferences preferences =
+//                   await SharedPreferences.getInstance();
+//               await preferences.clear();
+//
+//               //Navigator.of(context).pop();
+//             },
+//           ),
+//         ],
+//       );
+//     },
+//   );
+// }
