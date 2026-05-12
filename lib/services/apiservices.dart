@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:flutter/foundation.dart';
 import 'package:ge_assistant/Constants/appconst.dart';
 import 'package:ge_assistant/models/CreateOrder.dart';
 import 'package:ge_assistant/models/accesstoken.dart';
@@ -300,6 +301,8 @@ class ApiProvider {
         Uri.parse('http://geapps.germanexperts.ae:7004/api/updatefcmtoken'),
         headers: {"apikey": "a4db08b7-5729-4ba9-8c08-f2df493465a1"},
         body: {"user_id": userid, "fcmtoken": fcmtoken});
+    debugPrint(
+        "response of fcm token change api ${response.body.toString()} | body - ${response?.request?.headers} | ${response?.headers}");
     var data = changefcmtokenFromJson(response.body.toString());
     if (response.statusCode == 200) {
       print(response.statusCode);
