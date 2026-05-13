@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:flutter/foundation.dart';
 import 'package:ge_assistant/Constants/appconst.dart';
+import 'package:ge_assistant/Screens/EndUserDirectory/models/image_model.dart';
 import 'package:ge_assistant/models/CreateOrder.dart';
 import 'package:ge_assistant/models/accesstoken.dart';
 import 'package:ge_assistant/models/canceledandcompletedOrdermodel.dart';
@@ -34,6 +35,20 @@ class ApiProvider {
       return data.first;
     } else {
       return data.first;
+    }
+  }
+
+  // --- ADD THIS TO YOUR ApiProvider CLASS ---
+  Future<EmployeeImageModel> getEmployeeImages() async {
+    try {
+      var response = await http.get(Uri.parse('http://geapps.germanexperts.ae:7004/api/gettingemployeeimage'));
+      if (response.statusCode == 200) {
+        return EmployeeImageModel.fromJson(jsonDecode(response.body));
+      } else {
+        throw Exception('Failed to load images');
+      }
+    } catch (e) {
+      throw Exception(e.toString());
     }
   }
 
@@ -295,6 +310,8 @@ class ApiProvider {
       return data.first;
     }
   }
+
+
 
   Future<Changefcmtoken> changefcm(String userid, String fcmtoken) async {
     final response = await http.post(

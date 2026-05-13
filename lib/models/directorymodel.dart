@@ -14,7 +14,7 @@ String directoryModelToJson(List<DirectoryModel> data) =>
 class DirectoryModel {
   final String? message;
   final String? messagecode;
-  final List<Datum>? data;
+  final List<DirecotoryModelDatum>? data;
 
   DirectoryModel({
     this.message,
@@ -27,7 +27,7 @@ class DirectoryModel {
         messagecode: json["messagecode"],
         data: json["data"] == null
             ? []
-            : List<Datum>.from(json["data"]!.map((x) => Datum.fromJson(x))),
+            : List<DirecotoryModelDatum>.from(json["data"]!.map((x) => DirecotoryModelDatum.fromJson(x))),
       );
 
   Map<String, dynamic> toJson() => {
@@ -39,7 +39,7 @@ class DirectoryModel {
       };
 }
 
-class Datum {
+class DirecotoryModelDatum {
   final int? directoryid;
   final String? employeename;
   final String? employeecode;
@@ -59,8 +59,10 @@ class Datum {
   final String? modifiedAt;
   final String? createdbyname;
   final String? updatedbyname;
+  final String? imgpath;
 
-  Datum({
+  DirecotoryModelDatum({
+    this.imgpath,
     this.directoryid,
     this.employeename,
     this.employeecode,
@@ -82,7 +84,8 @@ class Datum {
     this.updatedbyname,
   });
 
-  factory Datum.fromJson(Map<String, dynamic> json) => Datum(
+  factory DirecotoryModelDatum.fromJson(Map<String, dynamic> json) => DirecotoryModelDatum(
+    imgpath: json["imgpath"],
         directoryid: json["directoryid"],
         employeename: json["employeename"],
         employeecode: json["employeecode"],
@@ -105,6 +108,7 @@ class Datum {
       );
 
   Map<String, dynamic> toJson() => {
+        "imgpath": imgpath,
         "directoryid": directoryid,
         "employeename": employeename,
         "employeecode": employeecode,

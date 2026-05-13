@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:ge_assistant/Constants/appconst.dart';
 import 'package:ge_assistant/Constants/popupmenu.dart';
+import 'package:ge_assistant/Screens/EndUserDirectory/models/image_model.dart';
 import 'package:ge_assistant/models/crmloginmodel.dart';
 import 'package:ge_assistant/models/directorymodel.dart';
 import 'package:ge_assistant/services/apiservices.dart';
@@ -33,15 +34,22 @@ class _UserDirectoryDesktopState extends State<UserDirectoryDesktop> {
   final SpeechToText _speechToText = SpeechToText();
   bool _speechEnabled = false;
 
-  // --- SPEECH TO TEXT METHODS ---
+
+
+// --- SPEECH TO TEXT METHODS ---
   void _initSpeech() async {
-    _speechEnabled = await _speechToText.initialize(
-      onStatus: (status) {
-        if (mounted) setState(() {}); // Add if (mounted)
-      },
-      onError: (error) => print('Speech Error: $error'),
-    );
-    if (mounted) setState(() {}); // Add if (mounted)
+    try {
+      _speechEnabled = await _speechToText.initialize(
+        onStatus: (status) {
+          if (mounted) setState(() {});
+        },
+        onError: (error) => print('Speech Error: $error'),
+      );
+    } catch (e) {
+      print("Speech recognition failed to initialize: $e");
+      _speechEnabled = false; // Flags the device as unsupported
+    }
+    if (mounted) setState(() {});
   }
 
   void _startListening() async {
@@ -78,7 +86,7 @@ class _UserDirectoryDesktopState extends State<UserDirectoryDesktop> {
   final ItemScrollController _itemScrollController = ItemScrollController();
   final ItemPositionsListener _itemPositionsListener =
       ItemPositionsListener.create();
-  List<Datum> check = [];
+  List<DirecotoryModelDatum> check = [];
   late List<DirectoryModel> directoryFilter = [];
   late List<DirectoryModel> actualDirectory = [];
   late List<Record> compareLists = [];
@@ -99,9 +107,9 @@ class _UserDirectoryDesktopState extends State<UserDirectoryDesktop> {
 
   // --- UNIFIED FILTER FUNCTION ---
   void applyFilters() {
-    List<Datum> allData = actualDirectory.first.data ?? [];
+    List<DirecotoryModelDatum> allData = actualDirectory.first.data ?? [];
 
-    List<Datum> filteredData = allData.where((element) {
+    List<DirecotoryModelDatum> filteredData = allData.where((element) {
       // 1. Check Name Search text box
       bool matchesName = _textEditingController.text.isEmpty ||
           (element.employeename ?? "")
@@ -148,12 +156,14 @@ class _UserDirectoryDesktopState extends State<UserDirectoryDesktop> {
     status = client.getloginusers(AppConstants.token ?? "");
     await status;
 
-    if (mounted) { // Add if (mounted) check here
+    if (mounted) {
+      // Add if (mounted) check here
       setState(() {
         isRefreshing = false;
 
         DateTime now = DateTime.now();
-        int hour = now.hour > 12 ? now.hour - 12 : (now.hour == 0 ? 12 : now.hour);
+        int hour =
+            now.hour > 12 ? now.hour - 12 : (now.hour == 0 ? 12 : now.hour);
         String amPm = now.hour >= 12 ? 'PM' : 'AM';
         String minute = now.minute.toString().padLeft(2, '0');
         lastRefreshTime = "$hour:$minute $amPm";
@@ -161,8 +171,11 @@ class _UserDirectoryDesktopState extends State<UserDirectoryDesktop> {
     }
   }
 
+
   @override
   void initState() {
+
+
     actualDirectory.addAll(widget.director);
     directoryFilter = List.from(widget.director);
 
@@ -440,7 +453,7 @@ class _UserDirectoryDesktopState extends State<UserDirectoryDesktop> {
                                   applyFilters(); // Unified filter call
                                 },
                                 decoration: InputDecoration(
-                                  hintText: "Search  Department",
+                                  hintText: "Search Department",
                                   hintStyle: const TextStyle(
                                       color: Colors.white, fontSize: 14),
                                   suffixIcon: const Stack(
@@ -494,43 +507,73 @@ class _UserDirectoryDesktopState extends State<UserDirectoryDesktop> {
                                     color: Colors.white, fontSize: 14),
                                 suffixIcon: Row(
                                   mainAxisSize: MainAxisSize.min,
-                                  // Keep it compact
                                   children: [
-                                    // The Microphone Button
-                                    IconButton(
-                                      icon: Icon(
-                                        _speechToText.isListening
-                                            ? Icons.mic
-                                            : Icons.mic_none,
-                                        // Turn red when recording so the user knows
-                                        color: _speechToText.isListening
-                                            ? Colors.red
-                                            : Colors.white,
+                                    // --- CONDITIONAL CHECK ADDED HERE ---
+                                    if (_speechEnabled)
+                                      IconButton(
+                                        icon: Icon(
+                                          _speechToText.isListening
+                                              ? Icons.mic
+                                              : Icons.mic_none,
+                                          color: _speechToText.isListening
+                                              ? Colors.red
+                                              : Colors.white,
+                                        ),
+                                        onPressed: () {
+                                          if (_speechEnabled) {
+                                            _speechToText.isNotListening
+                                                ? _startListening()
+                                                : _stopListening();
+                                          }
+                                        },
                                       ),
-                                      onPressed: () {
-                                        // If speech is available, toggle listening
-                                        if (_speechEnabled) {
-                                          _speechToText.isNotListening
-                                              ? _startListening()
-                                              : _stopListening();
-                                        } else {
-                                          // Optional: Show a snackbar if permissions are denied
-                                          ScaffoldMessenger.of(context)
-                                              .showSnackBar(const SnackBar(
-                                                  content: Text(
-                                                      'Speech recognition not available or denied.')));
-                                        }
-                                        setState(() {});
-                                      },
-                                    ),
-                                    // The existing Search Icon
+                                    // The existing Search Icon stays visible for everyone
                                     const Icon(
                                       Icons.search,
                                       color: Colors.white,
                                     ),
-                                    const SizedBox(width: 10), // Padding
+                                    const SizedBox(width: 10),
                                   ],
                                 ),
+                                // suffixIcon: Row(
+                                //   mainAxisSize: MainAxisSize.min,
+                                //   // Keep it compact
+                                //   children: [
+                                //     // The Microphone Button
+                                //     IconButton(
+                                //       icon: Icon(
+                                //         _speechToText.isListening
+                                //             ? Icons.mic
+                                //             : Icons.mic_none,
+                                //         // Turn red when recording so the user knows
+                                //         color: _speechToText.isListening
+                                //             ? Colors.red
+                                //             : Colors.white,
+                                //       ),
+                                //       onPressed: () {
+                                //         // If speech is available, toggle listening
+                                //         if (_speechEnabled) {
+                                //           _speechToText.isNotListening
+                                //               ? _startListening()
+                                //               : _stopListening();
+                                //         } else {
+                                //           // Optional: Show a snackbar if permissions are denied
+                                //           ScaffoldMessenger.of(context)
+                                //               .showSnackBar(const SnackBar(
+                                //                   content: Text(
+                                //                       'Speech recognition not available or denied.')));
+                                //         }
+                                //         setState(() {});
+                                //       },
+                                //     ),
+                                //     // The existing Search Icon
+                                //     const Icon(
+                                //       Icons.search,
+                                //       color: Colors.white,
+                                //     ),
+                                //     const SizedBox(width: 10), // Padding
+                                //   ],
+                                // ),
                                 border: OutlineInputBorder(
                                     borderSide: const BorderSide(
                                         color: Colors.transparent),
@@ -654,7 +697,7 @@ class _UserDirectoryDesktopState extends State<UserDirectoryDesktop> {
                         ),
                       ),
 
-                      Expanded(
+                      Expanded(flex: 1,
                         child: SizedBox(
                             child: Text(
                           "Extension",
@@ -668,7 +711,7 @@ class _UserDirectoryDesktopState extends State<UserDirectoryDesktop> {
                       // ===================================
                       // UPDATED STATUS HEADER W/ REFRESH
                       // ===================================
-                      Expanded(
+                      Expanded(flex: 1,
                         child: Column(
                           mainAxisSize: MainAxisSize.min,
                           mainAxisAlignment: MainAxisAlignment.center,
@@ -747,7 +790,7 @@ class _UserDirectoryDesktopState extends State<UserDirectoryDesktop> {
                                     ? const Color(0xff5A5858)
                                     : const Color(0xff424242),
                                 child: customListExpanded(
-                                    context, directoryList, status)),
+                                    context, directoryList,status)),
                           );
                         }),
                   )
