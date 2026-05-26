@@ -133,7 +133,7 @@ class _MobileEndPantryMenuState extends State<MobileEndPantryMenu>
                     padding: const EdgeInsets.only(right: 8.0),
                     child: ElevatedButton(
                       onPressed: () {},
-                      child: AutoSizeText("Recent orders"),
+                      child: AutoSizeText("Recent orders",style: TextStyle(color: Colors.white),),
                       style: ButtonStyle(
                         backgroundColor:
                             const MaterialStatePropertyAll(Color(0xff303030)),

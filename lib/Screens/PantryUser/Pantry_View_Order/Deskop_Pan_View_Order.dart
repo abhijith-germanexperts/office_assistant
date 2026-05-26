@@ -205,9 +205,9 @@ class _DesktopPantryViewOrderState extends State<DesktopPantryViewOrder>
                           child: const Row(
                             mainAxisAlignment: MainAxisAlignment.start,
                             children: [
-                              Icon(Icons.arrow_back_rounded),
+                              Icon(Icons.arrow_back_rounded, color: Colors.white),
                               SizedBox(width: 8),
-                              Text('Go back'),
+                              Text('Go back',style: TextStyle(color: Colors.white,),),
                             ],
                           ),
                         )),

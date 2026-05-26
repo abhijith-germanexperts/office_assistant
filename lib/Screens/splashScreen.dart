@@ -4,6 +4,7 @@ import 'dart:io';
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:ge_assistant/Screens/End%20userselection%20page/EndUserSelectionBasePage.dart';
 import 'package:ge_assistant/Screens/login/LoginDesktopBody.dart';
 import 'package:ge_assistant/rough.dart';
@@ -28,6 +29,7 @@ class _SplashScreenState extends State<SplashScreen> {
   void initState() {
     //AppConstants.username = getValue() ?? "";
     //print(AppConstants.username);
+    SystemChannels.textInput.invokeMethod('TextInput.hide');
     inittimer();
     initreload();
     //initilizefirebase();

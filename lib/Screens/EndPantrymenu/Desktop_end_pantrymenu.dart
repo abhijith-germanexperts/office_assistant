@@ -210,11 +210,11 @@ class _DesktopEndPantryMenuState extends State<DesktopEndPantryMenu>
                           child: Row(
                             mainAxisAlignment: MainAxisAlignment.start,
                             children: [
-                              Icon(Icons.arrow_back_rounded),
+                              Icon(Icons.arrow_back_rounded, color: Colors.white),
                               SizedBox(width: 8),
                               Text(
                                 'Go back',
-                                style: GoogleFonts.inriaSerif(),
+                                style: GoogleFonts.inriaSerif(textStyle: TextStyle(color: Colors.white,)),
                               ),
                             ],
                           ),
@@ -344,7 +344,7 @@ class _DesktopEndPantryMenuState extends State<DesktopEndPantryMenu>
                               ),
                         ),
                       ),
-                      child: const Text("Recent orders"),
+                      child: const Text("Recent orders",style: TextStyle(color: Colors.white)),
                     ),
                   ),
                   const Spacer(),

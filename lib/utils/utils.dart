@@ -10,7 +10,7 @@ class Utils {
 
   static Future logout(int id) async {
     final postEditNotificationFcm =
-        "http://geapps.germanexperts.ae:7004/api/offlineuser/$id";
+        "http://geapps.germanexperts.ae:7004/api/offlineusernew/$id";
 
     try {
       final http.Response res = await http.post(
