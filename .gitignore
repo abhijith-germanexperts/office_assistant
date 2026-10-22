@@ -4,3 +4,19 @@
 
 # FVM Version Cache
 .fvm/
+
+# Flutter generated, recreated on every build
+.flutter-plugins
+.flutter-plugins-dependencies
+pubspec.lock
+**/Flutter/ephemeral/
+**/flutter/ephemeral/
+
+# Android build cache and machine-specific paths
+android/.gradle/
+android/.idea/
+android/local.properties
+
+# CocoaPods
+**/Pods/
+**/Podfile.lock
