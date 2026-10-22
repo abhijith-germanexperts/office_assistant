@@ -42,7 +42,7 @@ Future<void> main() async {
   //   playerId: 'my_unique_playerId',
   // );
   // runApp(const BasePage());
-  if (Platform.isWindows) {
+  if (Platform.isWindows || Platform.isMacOS) {
     await windowManager.ensureInitialized();
     WindowManager.instance.setMinimumSize(const Size(853, 700));
     // WindowManager.instance.setMaximumSize(const Size(1200, 600));
